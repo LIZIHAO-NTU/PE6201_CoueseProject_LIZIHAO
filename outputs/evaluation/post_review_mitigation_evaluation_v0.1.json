@@ -1,0 +1,565 @@
+{
+  "evaluation_version": "post-review-mitigation-0.1",
+  "safety_policy_version": "behaviour-guardrails-0.1",
+  "type_policy": "auditable context resolver with trained-classifier fallback",
+  "selection_policy": "The frozen classifier and thresholds were not retrained or tuned on gold. The off-platform-payment guardrail is grounded in reviewed training mechanisms; type context precedence was checked on validation.",
+  "independence_warning": "Gold results below are a post-review diagnostic because the error review informed mitigation priorities. They must not be reported as a fresh independent test estimate.",
+  "review_summary": {
+    "records": 30,
+    "reviewed_non_correct": 17,
+    "correct_unreviewed": 13,
+    "priority_counts": {
+      "correct": 13,
+      "conservative_abstention": 5,
+      "type_error": 9,
+      "critical_false_reassurance": 1,
+      "false_positive_review": 1,
+      "ambiguous_case_miss": 1
+    },
+    "assessment_counts": {
+      "blank": 13,
+      "acceptable_tradeoff": 6,
+      "needs_mitigation": 10,
+      "critical_issue": 1
+    }
+  },
+  "validation": {
+    "metrics": {
+      "n": 12,
+      "exact_three_way_accuracy": 0.5,
+      "operational_scam_recall": 1.0,
+      "high_risk_scam_recall": 0.375,
+      "flagged_precision_for_scam": 0.8,
+      "legitimate_false_positive_rate": 0.3333,
+      "abstention_rate": 0.5833,
+      "ambiguous_abstention_recall": 1.0,
+      "deployed_scam_type_accuracy": 1.0,
+      "low_risk_scam_count": 0,
+      "guardrail_trigger_count": 1,
+      "type_resolution_sources": {
+        "type_classifier": 2,
+        "context_rule": 8,
+        "suppressed_for_low_risk": 2
+      }
+    },
+    "rows": [
+      {
+        "id": "msg_train_amb_001",
+        "gold_risk_label": "ambiguous",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.47,
+        "gold_primary_type": "uncertain",
+        "predicted_primary_type": "job",
+        "type_resolution_source": "type_classifier",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_train_ecom_003",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.45,
+        "gold_primary_type": "e_commerce",
+        "predicted_primary_type": "e_commerce",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": [
+          "the message requests payment outside a marketplace's protected checkout"
+        ]
+      },
+      {
+        "id": "msg_train_ecom_004",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.582,
+        "gold_primary_type": "e_commerce",
+        "predicted_primary_type": "e_commerce",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_train_gov_005",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.45,
+        "gold_primary_type": "government_impersonation",
+        "predicted_primary_type": "government_impersonation",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_train_gov_009",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.48,
+        "gold_primary_type": "government_impersonation",
+        "predicted_primary_type": "government_impersonation",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_train_inv_006",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.501,
+        "gold_primary_type": "investment",
+        "predicted_primary_type": "investment",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_train_inv_010",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.472,
+        "gold_primary_type": "investment",
+        "predicted_primary_type": "investment",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_train_job_007",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.454,
+        "gold_primary_type": "job",
+        "predicted_primary_type": "job",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_train_job_010",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.523,
+        "gold_primary_type": "job",
+        "predicted_primary_type": "job",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_train_legit_009",
+        "gold_risk_label": "legitimate",
+        "predicted_risk_label": "legitimate",
+        "risk_level": "low",
+        "risk_score": 0.354,
+        "gold_primary_type": "not_applicable",
+        "predicted_primary_type": "uncertain",
+        "type_resolution_source": "suppressed_for_low_risk",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_train_legit_010",
+        "gold_risk_label": "legitimate",
+        "predicted_risk_label": "legitimate",
+        "risk_level": "low",
+        "risk_score": 0.386,
+        "gold_primary_type": "not_applicable",
+        "predicted_primary_type": "uncertain",
+        "type_resolution_source": "suppressed_for_low_risk",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_train_legit_013",
+        "gold_risk_label": "legitimate",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.416,
+        "gold_primary_type": "not_applicable",
+        "predicted_primary_type": "e_commerce",
+        "type_resolution_source": "type_classifier",
+        "guardrail_reasons": []
+      }
+    ]
+  },
+  "gold_posthoc": {
+    "metrics": {
+      "n": 30,
+      "exact_three_way_accuracy": 0.6333,
+      "operational_scam_recall": 1.0,
+      "high_risk_scam_recall": 0.55,
+      "flagged_precision_for_scam": 0.8696,
+      "legitimate_false_positive_rate": 0.1429,
+      "abstention_rate": 0.4,
+      "ambiguous_abstention_recall": 0.6667,
+      "deployed_scam_type_accuracy": 1.0,
+      "low_risk_scam_count": 0,
+      "guardrail_trigger_count": 2,
+      "type_resolution_sources": {
+        "context_rule": 19,
+        "type_classifier": 4,
+        "suppressed_for_low_risk": 7
+      }
+    },
+    "rows": [
+      {
+        "id": "msg_eval_gov_001",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.504,
+        "gold_primary_type": "government_impersonation",
+        "predicted_primary_type": "government_impersonation",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_gov_002",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.461,
+        "gold_primary_type": "government_impersonation",
+        "predicted_primary_type": "government_impersonation",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_gov_003",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.525,
+        "gold_primary_type": "government_impersonation",
+        "predicted_primary_type": "government_impersonation",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_gov_004",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.529,
+        "gold_primary_type": "government_impersonation",
+        "predicted_primary_type": "government_impersonation",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_gov_005",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.502,
+        "gold_primary_type": "government_impersonation",
+        "predicted_primary_type": "government_impersonation",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_inv_001",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.504,
+        "gold_primary_type": "investment",
+        "predicted_primary_type": "investment",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_inv_002",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.475,
+        "gold_primary_type": "investment",
+        "predicted_primary_type": "investment",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_inv_003",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.513,
+        "gold_primary_type": "investment",
+        "predicted_primary_type": "investment",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_inv_004",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.436,
+        "gold_primary_type": "investment",
+        "predicted_primary_type": "investment",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_inv_005",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.541,
+        "gold_primary_type": "investment",
+        "predicted_primary_type": "investment",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_job_001",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.505,
+        "gold_primary_type": "job",
+        "predicted_primary_type": "job",
+        "type_resolution_source": "type_classifier",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_job_002",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.49,
+        "gold_primary_type": "job",
+        "predicted_primary_type": "job",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_job_003",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.427,
+        "gold_primary_type": "job",
+        "predicted_primary_type": "job",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_job_004",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.506,
+        "gold_primary_type": "job",
+        "predicted_primary_type": "job",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_job_005",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.467,
+        "gold_primary_type": "job",
+        "predicted_primary_type": "job",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_ecom_001",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.4,
+        "gold_primary_type": "e_commerce",
+        "predicted_primary_type": "e_commerce",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": [
+          "the message requests payment outside a marketplace's protected checkout"
+        ]
+      },
+      {
+        "id": "msg_eval_ecom_002",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.522,
+        "gold_primary_type": "e_commerce",
+        "predicted_primary_type": "e_commerce",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_ecom_003",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "scam",
+        "risk_level": "high",
+        "risk_score": 0.565,
+        "gold_primary_type": "e_commerce",
+        "predicted_primary_type": "e_commerce",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_ecom_004",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.456,
+        "gold_primary_type": "e_commerce",
+        "predicted_primary_type": "e_commerce",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": [
+          "the message requests payment outside a marketplace's protected checkout"
+        ]
+      },
+      {
+        "id": "msg_eval_ecom_005",
+        "gold_risk_label": "scam",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.485,
+        "gold_primary_type": "e_commerce",
+        "predicted_primary_type": "e_commerce",
+        "type_resolution_source": "context_rule",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_legit_001",
+        "gold_risk_label": "legitimate",
+        "predicted_risk_label": "legitimate",
+        "risk_level": "low",
+        "risk_score": 0.359,
+        "gold_primary_type": "not_applicable",
+        "predicted_primary_type": "uncertain",
+        "type_resolution_source": "suppressed_for_low_risk",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_legit_002",
+        "gold_risk_label": "legitimate",
+        "predicted_risk_label": "legitimate",
+        "risk_level": "low",
+        "risk_score": 0.358,
+        "gold_primary_type": "not_applicable",
+        "predicted_primary_type": "uncertain",
+        "type_resolution_source": "suppressed_for_low_risk",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_legit_003",
+        "gold_risk_label": "legitimate",
+        "predicted_risk_label": "legitimate",
+        "risk_level": "low",
+        "risk_score": 0.381,
+        "gold_primary_type": "not_applicable",
+        "predicted_primary_type": "uncertain",
+        "type_resolution_source": "suppressed_for_low_risk",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_legit_004",
+        "gold_risk_label": "legitimate",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.452,
+        "gold_primary_type": "not_applicable",
+        "predicted_primary_type": "job",
+        "type_resolution_source": "type_classifier",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_legit_005",
+        "gold_risk_label": "legitimate",
+        "predicted_risk_label": "legitimate",
+        "risk_level": "low",
+        "risk_score": 0.377,
+        "gold_primary_type": "not_applicable",
+        "predicted_primary_type": "uncertain",
+        "type_resolution_source": "suppressed_for_low_risk",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_legit_006",
+        "gold_risk_label": "legitimate",
+        "predicted_risk_label": "legitimate",
+        "risk_level": "low",
+        "risk_score": 0.363,
+        "gold_primary_type": "not_applicable",
+        "predicted_primary_type": "uncertain",
+        "type_resolution_source": "suppressed_for_low_risk",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_legit_007",
+        "gold_risk_label": "legitimate",
+        "predicted_risk_label": "legitimate",
+        "risk_level": "low",
+        "risk_score": 0.347,
+        "gold_primary_type": "not_applicable",
+        "predicted_primary_type": "uncertain",
+        "type_resolution_source": "suppressed_for_low_risk",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_amb_001",
+        "gold_risk_label": "ambiguous",
+        "predicted_risk_label": "legitimate",
+        "risk_level": "low",
+        "risk_score": 0.379,
+        "gold_primary_type": "uncertain",
+        "predicted_primary_type": "uncertain",
+        "type_resolution_source": "suppressed_for_low_risk",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_amb_002",
+        "gold_risk_label": "ambiguous",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.38,
+        "gold_primary_type": "uncertain",
+        "predicted_primary_type": "e_commerce",
+        "type_resolution_source": "type_classifier",
+        "guardrail_reasons": []
+      },
+      {
+        "id": "msg_eval_amb_003",
+        "gold_risk_label": "ambiguous",
+        "predicted_risk_label": "ambiguous",
+        "risk_level": "medium",
+        "risk_score": 0.386,
+        "gold_primary_type": "uncertain",
+        "predicted_primary_type": "government_impersonation",
+        "type_resolution_source": "type_classifier",
+        "guardrail_reasons": []
+      }
+    ]
+  },
+  "frozen_gold_before_mitigation": {
+    "n": 30,
+    "exact_three_way_accuracy": 0.6333,
+    "operational_scam_recall": 0.95,
+    "high_risk_scam_recall": 0.55,
+    "flagged_precision_for_scam": 0.8636,
+    "high_risk_precision_for_scam": 1.0,
+    "legitimate_false_positive_rate": 0.1429,
+    "abstention_rate": 0.3667,
+    "ambiguous_abstention_recall": 0.6667,
+    "confusion_matrix": {
+      "scam": {
+        "scam": 11,
+        "ambiguous": 8,
+        "legitimate": 1
+      },
+      "legitimate": {
+        "legitimate": 6,
+        "ambiguous": 1
+      },
+      "ambiguous": {
+        "legitimate": 1,
+        "ambiguous": 2
+      }
+    }
+  },
+  "frozen_deployed_scam_type_accuracy": 0.5
+}

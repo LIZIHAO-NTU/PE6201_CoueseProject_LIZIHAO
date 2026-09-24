@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+{% block title %}Evaluation · ScamLens SG{% endblock %}
+{% block content %}
+<section class="page-intro">
+  <div class="eyebrow">Frozen evidence · current system · next experiment</div>
+  <h1>Measure the system,<br>not just the demo.</h1>
+  <p>This page separates completed evidence from evaluation still in progress. The local model results remain frozen; the optional LLM layer is instrumented for a controlled cross-model comparison without overstating unmeasured performance.</p>
+</section>
+<section class="test-design">
+  <div><span>Current dual-mode system</span><h2>What is deployed now?</h2></div>
+  <ul>
+    <li>Local TF-IDF Logistic Regression remains the default assessment path</li>
+    <li>The LLM second opinion is explicitly enabled per assessment and fails back to local analysis</li>
+    <li>Conservative fusion prevents an LLM from downgrading local high-risk or user-harm decisions</li>
+    <li>Three allowlisted models can be compared only in developer mode</li>
+    <li>Operational runs are stored in local SQLite using message hashes rather than raw messages</li>
+    <li>Labelled benchmarks automatically calculate quality, safety, latency, token and cost metrics</li>
+    <li>LLM outcome metrics are not claimed until the controlled benchmark is completed</li>
+  </ul>
+</section>
+{% set displayed_benchmark = frozen_benchmark or latest_benchmark %}
+{% if displayed_benchmark and displayed_benchmark.summary %}
+<section class="evaluation-table-section">
+  <div>
+    <span class="step">{{ 'Frozen benchmark' if displayed_benchmark.is_frozen else 'Latest benchmark · not frozen' }}</span>
+    <h2>Persistent cross-model evidence</h2>
+    <p>{{ displayed_benchmark.summary.dataset_name }}. {{ displayed_benchmark.summary.evidence_level }} Raw message text is excluded from SQLite and exports.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Variant</th><th>Cases</th><th>Exact</th><th>Scam recall</th><th>Legit FPR</th><th>Critical false reassurance</th><th>P95 latency</th><th>Cost</th></tr></thead>
+      <tbody>
+        {% for item in displayed_benchmark.summary.variants %}
+        <tr>
+          <td><code>{{ item.variant }}</code></td>
+          <td>{{ item.cases }}</td>
+          <td>{{ ('%.1f%%'|format(item.exact_three_way_accuracy * 100)) if item.exact_three_way_accuracy is not none else '—' }}</td>
+          <td>{{ ('%.1f%%'|format(item.operational_scam_recall * 100)) if item.operational_scam_recall is not none else '—' }}</td>
+          <td>{{ ('%.1f%%'|format(item.legitimate_false_positive_rate * 100)) if item.legitimate_false_positive_rate is not none else '—' }}</td>
+          <td>{{ item.critical_false_reassurance_count }}</td>
+          <td>{{ (item.p95_latency_ms|string + ' ms') if item.p95_latency_ms is not none else '—' }}</td>
+          <td>US${{ '%.6f'|format(item.estimated_cost_usd) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+{% else %}
+<section class="test-design">
+  <div><span>Benchmark pending</span><h2>Ready for a controlled run</h2></div>
+  <ul><li>Developer mode can run the same labelled cases across the local baseline and selected models</li><li>A conservative cost estimate and explicit confirmation are required before paid calls</li><li>Completed runs can be exported and frozen for reproducible reporting</li></ul>
+</section>
+{% endif %}
+<section class="test-design">
+  <div><span>Post-review mitigation</span><h2>What changed after human error review?</h2></div>
+  <ul>
+    <li>An explicit off-platform marketplace payment request can no longer receive low-risk reassurance</li>
+    <li>Scam type uses auditable context rules with the trained classifier as fallback</li>
+    <li>All automated regression tests pass</li>
+    <li>The post-review gold run is a diagnostic, not a new independent test result</li>
+    <li>A new untouched evaluation set is required before claiming generalisation</li>
+  </ul>
+</section>
+<section class="evaluation-table-section">
+  <div>
+    <span class="step">AI-assisted sanity check · 20 cases</span>
+    <h2>Strong regression performance</h2>
+    <p>AI assisted with authoring and pre-model label review, so these results support the demo and regression workflow rather than an independent generalisation claim.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Operational scam recall</td><td>100.0%</td></tr>
+        <tr><td>Legitimate false-positive rate</td><td>0.0%</td></tr>
+        <tr><td>Ambiguous-case abstention recall</td><td>100.0%</td></tr>
+        <tr><td>Deployed scam-type accuracy</td><td>100.0%</td></tr>
+        <tr><td>Exact three-way accuracy</td><td>70.0%</td></tr>
+        <tr><td>Low-risk scams</td><td>0 / 12</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section class="metric-grid">
+  <article><span>Operational value</span><strong>95.0%</strong><h2>Scam recall</h2><p>Medium and high risk both count as flagged for independent verification.</p></article>
+  <article><span>Safety trade-off</span><strong>14.3%</strong><h2>Legitimate false-positive rate</h2><p>One of seven legitimate gold cases was conservatively flagged.</p></article>
+  <article><span>Uncertainty handling</span><strong>66.7%</strong><h2>Ambiguous-case abstention recall</h2><p>Two of three insufficient-information cases produced a medium-risk result.</p></article>
+</section>
+<section class="evaluation-table-section">
+  <div><span class="step">Controlled comparison</span><h2>What changed?</h2><p>The trained model substantially improved scam recall, while making uncertainty and false positives visible.</p></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Metric</th><th>Rules baseline</th><th>Trained model</th></tr></thead>
+      <tbody>
+        <tr><td>Three-way accuracy</td><td>30.0%</td><td>63.3%</td></tr>
+        <tr><td>Operational scam recall</td><td>20.0%</td><td>95.0%</td></tr>
+        <tr><td>High-risk scam recall</td><td>10.0%</td><td>55.0%</td></tr>
+        <tr><td>Legitimate false-positive rate</td><td>0.0%</td><td>14.3%</td></tr>
+        <tr><td>Abstention rate</td><td>6.7%</td><td>36.7%</td></tr>
+        <tr><td>Deployed scam-type accuracy</td><td>70.0%</td><td>50.0%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section class="evaluation-table-section">
+  <div><span class="step">System ablation status</span><h2>Which component adds value?</h2><p>Classification, URL inspection, evidence retrieval, LLM review, fusion and intervention remain separable so each contribution can be tested.</p></div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>System</th><th>Local ML</th><th>URL</th><th>RAG</th><th>LLM</th><th>Fusion</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Rules baseline</td><td>Rules</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="status ready">Measured</span></td></tr>
+        <tr><td>Trained local classifier</td><td>Yes</td><td>—</td><td>—</td><td>—</td><td>—</td><td><span class="status ready">Measured</span></td></tr>
+        <tr><td>Local multi-signal assistant</td><td>Yes</td><td>Yes</td><td>Yes</td><td>—</td><td>—</td><td><span class="status ready">Integrated</span></td></tr>
+        <tr><td>LLM-enhanced assistant</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Optional</td><td>Conservative</td><td><span class="status next">Benchmark pending</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section class="evaluation-table-section">
+  <div>
+    <span class="step">Cross-model experiment</span>
+    <h2>Same task, same context, different model</h2>
+    <p>Each model receives the same redacted message, local signals, URL summary and top-two retrieved evidence. This controls the input while exposing quality, latency and cost differences.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Developer model</th><th>Intended role</th><th>Evaluation status</th></tr></thead>
+      <tbody>
+        <tr><td><code>google/gemini-2.5-flash</code></td><td>Routine default</td><td><span class="status {{ 'ready' if displayed_benchmark and 'google/gemini-2.5-flash' in displayed_benchmark.variants else 'next' }}">{{ 'Measured' if displayed_benchmark and 'google/gemini-2.5-flash' in displayed_benchmark.variants else 'Pending controlled run' }}</span></td></tr>
+        <tr><td><code>anthropic/claude-haiku-4.5</code></td><td>Fast cross-family comparison</td><td><span class="status {{ 'ready' if displayed_benchmark and 'anthropic/claude-haiku-4.5' in displayed_benchmark.variants else 'next' }}">{{ 'Measured' if displayed_benchmark and 'anthropic/claude-haiku-4.5' in displayed_benchmark.variants else 'Pending controlled run' }}</span></td></tr>
+        <tr><td><code>anthropic/claude-sonnet-4.6</code></td><td>High-quality review</td><td><span class="status {{ 'ready' if displayed_benchmark and 'anthropic/claude-sonnet-4.6' in displayed_benchmark.variants else 'next' }}">{{ 'Measured' if displayed_benchmark and 'anthropic/claude-sonnet-4.6' in displayed_benchmark.variants else 'Pending controlled run' }}</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section class="test-design">
+  <div><span>Planned LLM metrics</span><h2>What will determine the best model?</h2></div>
+  <ul>
+    <li>Operational scam recall and critical false reassurance count</li>
+    <li>Legitimate false-positive rate and ambiguous-case abstention</li>
+    <li>Scam-type accuracy and human-rated explanation usefulness</li>
+    <li>Structured-output success and safe fallback rate</li>
+    <li>Average and percentile latency</li>
+    <li>Tokens and cost per assessment</li>
+  </ul>
+</section>
+<section class="evaluation-table-section">
+  <div>
+    <span class="step">Evidence retrieval · 32 cases</span>
+    <h2>Auditable grounding performance</h2>
+    <p>The assessed type and, for four response cases, the reported user-harm stage are supplied to the retriever. This designer-authored set checks deterministic ranking and provenance, not real-world generalisation.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Retrieval metric</th><th>Result</th></tr></thead>
+      <tbody>
+        <tr><td>Acceptable top-1 accuracy</td><td>100.0%</td></tr>
+        <tr><td>Expected document in top 3</td><td>100.0%</td></tr>
+        <tr><td>Required category in top 3</td><td>100.0%</td></tr>
+        <tr><td>Required action stage in top 3</td><td>100.0%</td></tr>
+        <tr><td>Mean reciprocal rank</td><td>1.000</td></tr>
+        <tr><td>Provenance completeness</td><td>100.0%</td></tr>
+        <tr><td>Top-1 with deliberately wrong assessed type</td><td>100.0%</td></tr>
+        <tr><td>Top-3 with deliberately wrong assessed type</td><td>100.0%</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+<section class="test-design">
+  <div><span>100% text weight</span><h2>URL fusion finding</h2></div>
+  <ul><li>Validation selected no numerical URL contribution to the final risk score</li><li>URL structure is still inspected and shown separately</li><li>This small-sample result does not imply URL signals are unimportant</li><li>A larger URL-labelled validation set is required before re-estimating fusion weights</li></ul>
+</section>
+<section class="test-design">
+  <div><span>48 / 12 / 30</span><h2>Train, validation and gold test</h2></div>
+  <ul>
+    <li>Four supported scam categories</li><li>Legitimate hard negatives</li><li>English-only MVP scope</li><li>Ambiguous and insufficient-information cases</li><li>Static analysis of obfuscated and look-alike URLs</li><li>No campaign group crosses data splits</li>
+  </ul>
+</section>
+{% endblock %}

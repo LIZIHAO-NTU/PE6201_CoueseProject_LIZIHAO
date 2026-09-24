@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}About · ScamLens SG{% endblock %}
+{% block content %}
+<section class="page-intro">
+  <div class="eyebrow">About the prototype</div>
+  <h1>Designed to assist judgement,<br>not replace it.</h1>
+  <p>ScamLens SG is an individual PE6201 End-of-Course Project focused on explainable, uncertainty-aware scam risk assessment for Singapore residents.</p>
+</section>
+<section class="about-grid">
+  <article><span class="step">Scope</span><h2>Four primary categories</h2><p>Government official impersonation, investment, job and e-commerce scams. Phishing, credential theft, urgency and payment requests are modelled as cross-cutting mechanisms.</p></article>
+  <article><span class="step">Local foundation</span><h2>Auditable analysis first</h2><p>A TF-IDF Logistic Regression classifier estimates risk and scam type. Safety rules, static URL inspection, retrieval and intervention remain separate modules with visible intermediate results.</p></article>
+  <article><span class="step">Optional LLM</span><h2>A second opinion, not the authority</h2><p>The LLM receives a compact evidence-grounded context only when explicitly enabled. Conservative fusion can raise concern but cannot downgrade a local high-risk or user-harm decision.</p></article>
+  <article><span class="step">Evidence grounding</span><h2>Singapore guidance with provenance</h2><p>A stage-aware weighted lexical retriever ranks 24 purpose-specific chunks from 12 official source pages and displays source dates, verification dates and match reasons. Retrieval supports explanation and does not independently set the local risk score.</p></article>
+  <article><span class="step">Responsible use</span><h2>Uncertainty and privacy stay visible</h2><p>Local mode sends nothing to an external AI provider. LLM mode sends a redacted, compact context through OpenRouter, never opens submitted URLs, stores no raw messages in telemetry and always presents a non-definitive assessment.</p></article>
+  <article><span class="step">Developer mode</span><h2>Built for measurable trade-offs</h2><p>A one-click diagnostics workspace exposes model selection, local and LLM decisions, fusion reasons, RAG ranking, URL signals, fallbacks, latency, tokens and estimated cost without displaying the API key.</p></article>
+</section>
+<section class="architecture-flow" aria-label="System architecture">
+  <div>Message</div><span>→</span><div>Local ML + rules</div><span>→</span><div>Static URL analysis</div><span>→</span><div>Official-source RAG</div><span>→</span><div>Optional LLM review</div><span>→</span><div>Conservative fusion</div><span>→</span><div>Intervention</div>
+</section>
+{% endblock %}

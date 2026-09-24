@@ -1,0 +1,277 @@
+{
+  "benchmark": "retrieval_eval_v0.1",
+  "retriever_version": "weighted-lexical-0.2",
+  "scope": "Designer-authored regression benchmark with the assessed scam type supplied to the retriever.",
+  "metrics": {
+    "case_count": 18,
+    "top1_acceptable_accuracy": 1.0,
+    "top3_expected_coverage": 1.0,
+    "top3_category_coverage": 1.0,
+    "mean_reciprocal_rank": 1.0,
+    "provenance_completeness": 1.0
+  },
+  "type_sensitivity": {
+    "without_assessed_type": {
+      "top1_accuracy": 1.0,
+      "top3_coverage": 1.0
+    },
+    "counterfactual_wrong_type": {
+      "top1_accuracy": 0.8888888888888888,
+      "top3_coverage": 1.0
+    }
+  },
+  "rows": [
+    {
+      "id": "ret_gov_001",
+      "primary_type": "government_impersonation",
+      "top_ids": [
+        "scamshield-government-impersonation",
+        "scamshield-phishing",
+        "singpass-security"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_gov_002",
+      "primary_type": "government_impersonation",
+      "top_ids": [
+        "scamshield-phishing",
+        "scamshield-government-impersonation",
+        "singpass-security"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_gov_003",
+      "primary_type": "government_impersonation",
+      "top_ids": [
+        "scamshield-government-impersonation",
+        "singpass-security",
+        "scamshield-phishing"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_gov_004",
+      "primary_type": "government_impersonation",
+      "top_ids": [
+        "scamshield-government-impersonation",
+        "scamshield-general",
+        "scamshield-phishing"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_inv_001",
+      "primary_type": "investment",
+      "top_ids": [
+        "scamshield-investment",
+        "mas-financial-institutions-directory",
+        "scamshield-general"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_inv_002",
+      "primary_type": "investment",
+      "top_ids": [
+        "scamshield-investment",
+        "scamshield-general",
+        "singpass-security"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_inv_003",
+      "primary_type": "investment",
+      "top_ids": [
+        "mas-financial-institutions-directory",
+        "scamshield-investment",
+        "scamshield-general"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_inv_004",
+      "primary_type": "investment",
+      "top_ids": [
+        "scamshield-investment",
+        "scamshield-general",
+        "singpass-security"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_job_001",
+      "primary_type": "job",
+      "top_ids": [
+        "scamshield-job",
+        "scamshield-general",
+        "singpass-security"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_job_002",
+      "primary_type": "job",
+      "top_ids": [
+        "singpass-security",
+        "scamshield-job",
+        "scamshield-general"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_job_003",
+      "primary_type": "job",
+      "top_ids": [
+        "scamshield-job",
+        "scamshield-general",
+        "singpass-security"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_job_004",
+      "primary_type": "job",
+      "top_ids": [
+        "scamshield-job",
+        "scamshield-investment",
+        "scamshield-general"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_ecom_001",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "scamshield-ecommerce",
+        "scamshield-general",
+        "scamshield-phishing"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_ecom_002",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "scamshield-ecommerce",
+        "scamshield-phishing",
+        "scamshield-general"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_ecom_003",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "scamshield-phishing",
+        "scamshield-ecommerce",
+        "scamshield-government-impersonation"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_ecom_004",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "scamshield-ecommerce",
+        "scamshield-general",
+        "scamshield-phishing"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_unc_001",
+      "primary_type": "uncertain",
+      "top_ids": [
+        "scamshield-tech-support",
+        "scamshield-general",
+        "singpass-security"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret_unc_002",
+      "primary_type": "uncertain",
+      "top_ids": [
+        "scamshield-phishing",
+        "singpass-security",
+        "scamshield-general"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    }
+  ]
+}

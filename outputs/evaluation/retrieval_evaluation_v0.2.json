@@ -1,0 +1,538 @@
+{
+  "benchmark": "retrieval_eval_v0.2",
+  "retriever_version": "weighted-lexical-0.3",
+  "scope": "Designer-authored regression benchmark with the assessed scam type supplied to the retriever.",
+  "metrics": {
+    "case_count": 32,
+    "top1_acceptable_accuracy": 1.0,
+    "top3_expected_coverage": 1.0,
+    "top3_category_coverage": 1.0,
+    "top3_action_stage_coverage": 1.0,
+    "mean_reciprocal_rank": 1.0,
+    "provenance_completeness": 1.0
+  },
+  "type_sensitivity": {
+    "without_assessed_type": {
+      "top1_accuracy": 1.0,
+      "top3_coverage": 1.0
+    },
+    "counterfactual_wrong_type": {
+      "top1_accuracy": 1.0,
+      "top3_coverage": 1.0
+    }
+  },
+  "rows": [
+    {
+      "id": "ret2_gov_001",
+      "primary_type": "government_impersonation",
+      "top_ids": [
+        "gov-safe-account-transfer",
+        "gov-credentials-unofficial-app",
+        "gov-sms-sender-verification"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_gov_002",
+      "primary_type": "government_impersonation",
+      "top_ids": [
+        "phishing-iras-refund",
+        "phishing-credential-link",
+        "gov-credentials-unofficial-app"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_gov_003",
+      "primary_type": "government_impersonation",
+      "top_ids": [
+        "singpass-credential-security",
+        "gov-credentials-unofficial-app",
+        "gov-sms-sender-verification"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_gov_004",
+      "primary_type": "government_impersonation",
+      "top_ids": [
+        "gov-credentials-unofficial-app",
+        "gov-safe-account-transfer",
+        "scamshield-response-money"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_gov_005",
+      "primary_type": "government_impersonation",
+      "top_ids": [
+        "gov-sms-sender-verification",
+        "phishing-bank-sms",
+        "singpass-credential-security"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_gov_006",
+      "primary_type": "government_impersonation",
+      "top_ids": [
+        "spf-mom-malware-documents",
+        "scamshield-response-accounts",
+        "gov-credentials-unofficial-app"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_inv_001",
+      "primary_type": "investment",
+      "top_ids": [
+        "investment-high-return-pressure",
+        "investment-fake-profit-withdrawal",
+        "scamshield-general-check"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_inv_002",
+      "primary_type": "investment",
+      "top_ids": [
+        "investment-fake-profit-withdrawal",
+        "scamshield-general-check",
+        "ecommerce-delivery-link-fee"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_inv_003",
+      "primary_type": "investment",
+      "top_ids": [
+        "mas-regulated-entity-check",
+        "scamshield-general-check",
+        "investment-online-stranger-chatgroup"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_inv_004",
+      "primary_type": "investment",
+      "top_ids": [
+        "investment-online-stranger-chatgroup",
+        "investment-high-return-pressure",
+        "mas-regulated-entity-check"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_inv_005",
+      "primary_type": "investment",
+      "top_ids": [
+        "investment-fake-profit-withdrawal",
+        "investment-high-return-pressure",
+        "scamshield-response-money"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_inv_006",
+      "primary_type": "investment",
+      "top_ids": [
+        "investment-high-return-pressure",
+        "job-task-advance-payment",
+        "scamshield-general-check"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_job_001",
+      "primary_type": "job",
+      "top_ids": [
+        "job-task-advance-payment",
+        "scamshield-general-check",
+        "spf-mom-malware-documents"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_job_002",
+      "primary_type": "job",
+      "top_ids": [
+        "job-singpass-verification",
+        "singpass-credential-security",
+        "phishing-credential-link"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_job_003",
+      "primary_type": "job",
+      "top_ids": [
+        "job-personal-bank-account",
+        "job-task-advance-payment",
+        "singpass-credential-security"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_job_004",
+      "primary_type": "job",
+      "top_ids": [
+        "job-task-advance-payment",
+        "job-personal-bank-account",
+        "scamshield-general-check"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_job_005",
+      "primary_type": "job",
+      "top_ids": [
+        "job-personal-bank-account",
+        "job-task-advance-payment",
+        "scamshield-response-money"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_job_006",
+      "primary_type": "job",
+      "top_ids": [
+        "job-task-advance-payment",
+        "job-personal-bank-account",
+        "job-singpass-verification"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_ecom_001",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "ecommerce-off-platform-payment",
+        "ecommerce-delivery-link-fee",
+        "ecommerce-fake-payment-proof"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_ecom_002",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "ecommerce-delivery-link-fee",
+        "phishing-parcel-delivery",
+        "scamshield-general-check"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_ecom_003",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "ecommerce-fake-payment-proof",
+        "ecommerce-off-platform-payment",
+        "scamshield-general-check"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_ecom_004",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "phishing-credential-link",
+        "ecommerce-off-platform-payment",
+        "ecommerce-fake-payment-proof"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_ecom_005",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "ecommerce-delivery-link-fee",
+        "phishing-iras-refund",
+        "phishing-credential-link"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_ecom_006",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "ecommerce-off-platform-payment",
+        "ecommerce-fake-payment-proof",
+        "ecommerce-delivery-link-fee"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_unc_001",
+      "primary_type": "uncertain",
+      "top_ids": [
+        "tech-support-popup",
+        "singpass-credential-security",
+        "tech-support-remote-access-response"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_unc_002",
+      "primary_type": "uncertain",
+      "top_ids": [
+        "phishing-credential-link",
+        "phishing-parcel-delivery",
+        "phishing-iras-refund"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_unc_003",
+      "primary_type": "uncertain",
+      "top_ids": [
+        "phishing-bank-sms",
+        "scamshield-response-money",
+        "tech-support-remote-access-response"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_unc_004",
+      "primary_type": "uncertain",
+      "top_ids": [
+        "phishing-parcel-delivery",
+        "phishing-credential-link",
+        "ecommerce-delivery-link-fee"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": false,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_stage_001",
+      "primary_type": "uncertain",
+      "top_ids": [
+        "scamshield-response-money",
+        "job-personal-bank-account",
+        "gov-safe-account-transfer"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_stage_002",
+      "primary_type": "uncertain",
+      "top_ids": [
+        "scamshield-response-accounts",
+        "phishing-credential-link",
+        "phishing-parcel-delivery"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_stage_003",
+      "primary_type": "e_commerce",
+      "top_ids": [
+        "phishing-credential-link",
+        "phishing-parcel-delivery",
+        "scamshield-response-accounts"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    },
+    {
+      "id": "ret2_stage_004",
+      "primary_type": "uncertain",
+      "top_ids": [
+        "tech-support-remote-access-response",
+        "spf-mom-malware-documents",
+        "phishing-bank-sms"
+      ],
+      "top1_acceptable": true,
+      "top3_expected_coverage": true,
+      "top3_category_coverage": true,
+      "top3_action_stage_coverage": true,
+      "has_required_action_stage": true,
+      "reciprocal_rank": 1.0,
+      "provenance_complete": true
+    }
+  ]
+}

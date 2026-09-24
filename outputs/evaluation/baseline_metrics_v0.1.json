@@ -1,0 +1,59 @@
+{
+  "model_version": "mvp-rules-0.1",
+  "dataset": "message_gold_test_v0.1.jsonl",
+  "n": 30,
+  "class_counts": {
+    "scam": 20,
+    "legitimate": 7,
+    "ambiguous": 3
+  },
+  "exact_three_way_accuracy": 0.3,
+  "operational_scam_recall_flag_medium_or_high": 0.2,
+  "high_risk_scam_recall": 0.1,
+  "flagged_precision_for_scam": 1.0,
+  "high_risk_precision_for_scam": 1.0,
+  "legitimate_false_positive_rate_flag_medium_or_high": 0.0,
+  "abstention_rate_medium": 0.0667,
+  "ambiguous_abstention_recall": 0.0,
+  "scam_primary_type_accuracy": 0.7,
+  "url_scam_recall_flag_medium_or_high": 0.2,
+  "confusion_matrix": {
+    "scam": {
+      "scam": 2,
+      "legitimate": 16,
+      "ambiguous": 2
+    },
+    "legitimate": {
+      "legitimate": 7
+    },
+    "ambiguous": {
+      "legitimate": 3
+    }
+  },
+  "per_scam_type": {
+    "e_commerce": {
+      "n": 5,
+      "flagged_recall": 0.0,
+      "high_risk_recall": 0.0,
+      "type_accuracy": 0.6
+    },
+    "government_impersonation": {
+      "n": 5,
+      "flagged_recall": 0.4,
+      "high_risk_recall": 0.4,
+      "type_accuracy": 1.0
+    },
+    "investment": {
+      "n": 5,
+      "flagged_recall": 0.0,
+      "high_risk_recall": 0.0,
+      "type_accuracy": 0.8
+    },
+    "job": {
+      "n": 5,
+      "flagged_recall": 0.4,
+      "high_risk_recall": 0.0,
+      "type_accuracy": 0.4
+    }
+  }
+}

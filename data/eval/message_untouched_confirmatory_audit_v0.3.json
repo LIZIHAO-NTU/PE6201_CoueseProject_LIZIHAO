@@ -1,0 +1,37 @@
+{
+  "dataset": "data\\eval\\message_untouched_confirmatory_candidates_v0.3.jsonl",
+  "record_count": 68,
+  "risk_distribution": {
+    "scam": 40,
+    "legitimate": 16,
+    "ambiguous": 12
+  },
+  "scam_type_distribution": {
+    "government_impersonation": 10,
+    "investment": 10,
+    "job": 10,
+    "e_commerce": 10
+  },
+  "channel_distribution": {
+    "whatsapp": 21,
+    "sms": 21,
+    "telegram": 11,
+    "email": 15
+  },
+  "message_url_distribution": {
+    "with_url": 14,
+    "without_url": 54
+  },
+  "unique_ids": true,
+  "unique_campaign_groups": true,
+  "internal_near_duplicate_threshold": 0.72,
+  "internal_near_duplicates": [],
+  "highest_internal_token_jaccard": {
+    "score": 0.3,
+    "left_id": "msg_untouched_amb_007",
+    "right_id": "msg_untouched_amb_011"
+  },
+  "unsafe_message_urls": [],
+  "passed": true,
+  "note": "Message URLs use reserved example domains. Official advisory source URLs are metadata and are not opened by the application during message analysis."
+}

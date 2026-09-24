@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% block title %}Analyse a suspicious message · ScamLens SG{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="eyebrow">Evidence-grounded risk assessment</div>
+  <h1>Look beyond the message.<br><span>See the risk signals.</span></h1>
+  <p>Assess suspicious SMS, WhatsApp and email messages using message signals, URL structure and relevant Singapore advisories.</p>
+</section>
+
+<section class="workspace" aria-label="Message analysis workspace">
+  <form class="analysis-form" action="{{ url_for('main.analyse') }}" method="post">
+    <div class="form-heading">
+      <div><span class="step">01</span><h2>Paste the suspicious message</h2></div>
+      <span class="privacy-note">Not stored by this prototype</span>
+    </div>
+    {% if error %}<p class="form-error" role="alert">{{ error }}</p>{% endif %}
+    <label class="sr-only" for="message">Suspicious message</label>
+    <textarea id="message" name="message" maxlength="8000" required placeholder="Example: Your Singpass account will be suspended. Verify immediately at https://singpass-verification-example.com">{{ original_message or '' }}</textarea>
+    <div class="example-row">
+      <span>Try an example:</span>
+      <button type="button" class="text-button example" data-example="Your Singpass account will be suspended within 2 hours. Verify immediately at https://singpass-gov-sg.example.com/login">Government impersonation</button>
+      <button type="button" class="text-button example" data-example="Part-time job: earn S$500 daily doing simple tasks. Pay a S$50 deposit through PayNow to unlock your first commission.">Job scam</button>
+      <button type="button" class="text-button example" data-example="Your DBS card purchase of S$18.40 was approved. If this was not you, contact the bank using the number on the back of your card.">Legitimate-style alert</button>
+    </div>
+
+    <section class="mode-control" aria-labelledby="analysis-mode-title">
+      <div>
+        <span class="step">02</span>
+        <h2 id="analysis-mode-title">Choose the analysis mode</h2>
+        <p>Local analysis is the default. The LLM adds one evidence-grounded second opinion when you explicitly switch it on.</p>
+      </div>
+      <label class="switch-row {% if not llm_available %}is-disabled{% endif %}">
+        <input id="use_llm" type="checkbox" name="use_llm" {% if llm_requested and llm_available %}checked{% endif %} {% if not llm_available %}disabled{% endif %}>
+        <span class="switch" aria-hidden="true"><span></span></span>
+        <span><strong>Use LLM</strong><small>{% if llm_available %}Configured language model via OpenRouter{% else %}API key not configured — local mode remains available{% endif %}</small></span>
+      </label>
+      <p class="provider-note" id="provider-note">{% if llm_requested and llm_available %}The redacted message and compact analysis context will be sent to OpenRouter.{% else %}No message content will be sent to an external AI provider.{% endif %}</p>
+    </section>
+
+    <fieldset>
+      <legend><span class="step">03</span> What has already happened?</legend>
+      <label class="check-card"><input type="checkbox" name="clicked_link"><span><strong>I clicked the link</strong><small>No information entered</small></span></label>
+      <label class="check-card"><input type="checkbox" name="shared_credentials"><span><strong>I shared information</strong><small>Password, OTP, NRIC or banking details</small></span></label>
+      <label class="check-card"><input type="checkbox" name="transferred_money"><span><strong>I transferred money</strong><small>Payment, deposit or investment</small></span></label>
+    </fieldset>
+    <button class="primary-button" type="submit"><span>Assess message</span><span aria-hidden="true">→</span></button>
+    <p class="safety-copy">ScamLens does not open links found in your message. It analyses the URL text only.</p>
+  </form>
+
+  <aside class="method-card">
+    <span class="step">How it works</span>
+    <ol>
+      <li><strong>Message analysis</strong><span>Combines a reviewed TF-IDF Logistic Regression model with auditable safety guardrails.</span></li>
+      <li><strong>URL inspection</strong><span>Checks domain structure and brand impersonation without visiting the site.</span></li>
+      <li><strong>Evidence retrieval</strong><span>Finds related guidance from Singapore official sources.</span></li>
+      <li><strong>Optional LLM review</strong><span>The language model reviews only a compact, redacted context when you turn it on.</span></li>
+      <li><strong>Intervention</strong><span>Prioritises actions based on what the recipient has already done.</span></li>
+    </ol>
+  </aside>
+</section>
+
+{% if result %}
+<section class="results" id="results" aria-live="polite">
+  <div class="results-header risk-{{ result.risk_level }}">
+    <div>
+      <span class="result-kicker">Assessment result</span>
+      <h2>{{ result.assessment_label }}</h2>
+      <p>{{ result.primary_type_label }}</p>
+      <p class="mode-badge">{{ result.analysis_mode.label }}</p>
+      {% if result.analysis_mode.fell_back %}<p class="fallback-badge">LLM unavailable — safely returned the local result</p>{% endif %}
+      <p class="model-meta">{{ result.model_version }} · {{ result.safety_policy_version }} · uncertainty-aware assessment</p>
+    </div>
+    <div class="score-ring" style="--score: {{ (result.risk_score * 100)|round|int }}">
+      <strong>{{ (result.risk_score * 100)|round|int }}</strong><span>/100</span>
+    </div>
+  </div>
+
+  <div class="result-grid">
+    <article class="result-card">
+      <div class="card-title"><span>01</span><h3>Message signals</h3></div>
+      {% if result.mechanisms %}
+      <ul class="signal-list">{% for signal in result.mechanisms %}<li>{{ signal.label }}</li>{% endfor %}</ul>
+      {% else %}<p class="empty-state">No strong rule-based message signal was detected.</p>{% endif %}
+      {% if result.abstention_reasons %}
+      <div class="uncertainty-note">
+        <strong>Why independent verification is recommended</strong>
+        <ul>{% for reason in result.abstention_reasons %}<li>{{ reason }}</li>{% endfor %}</ul>
+      </div>
+      {% endif %}
+    </article>
+
+    <article class="result-card">
+      <div class="card-title"><span>02</span><h3>URL inspection</h3></div>
+      {% if result.urls %}
+        {% for item in result.urls %}
+        <div class="url-result">
+          <div class="url-heading"><code>{{ item.host }}</code><span class="pill pill-{{ item.risk_level }}">{{ item.risk_level }}</span></div>
+          <p class="domain-line">Registered domain: <strong>{{ item.registered_domain }}</strong></p>
+          <ul>{% for signal in item.signals %}<li>{{ signal }}</li>{% endfor %}</ul>
+        </div>
+        {% endfor %}
+      {% else %}<p class="empty-state">No URL was found. The risk estimate is based on the message text.</p>{% endif %}
+    </article>
+
+    {% if result.llm_analysis %}
+    <article class="result-card wide llm-card">
+      <div class="card-title"><span>03</span><h3>LLM second opinion</h3></div>
+      {% if result.llm_analysis.status == 'success' %}
+      <div class="llm-summary">
+        <span class="pill pill-ai">{{ result.llm_analysis.output.assessment | replace('_', ' ') }}</span>
+        <p>{{ result.llm_analysis.output.plain_language_explanation }}</p>
+      </div>
+      {% if result.llm_analysis.output.red_flags %}
+      <div class="llm-columns">
+        <div><strong>Additional red flags</strong><ul>{% for item in result.llm_analysis.output.red_flags %}<li>{{ item }}</li>{% endfor %}</ul></div>
+        <div><strong>Missing context</strong><ul>{% for item in result.llm_analysis.output.missing_context %}<li>{{ item }}</li>{% else %}<li>No additional missing context identified.</li>{% endfor %}</ul></div>
+      </div>
+      {% endif %}
+      {% else %}
+      <div class="fallback-panel"><strong>Local fallback used</strong><p>{{ result.llm_analysis.fallback_reason }}. Your assessment was still completed by the local pipeline.</p></div>
+      {% endif %}
+    </article>
+    {% endif %}
+
+    <article class="result-card wide">
+      <div class="card-title"><span>{{ '04' if result.llm_analysis else '03' }}</span><h3>What to do now</h3></div>
+      <ol class="action-list">
+        {% for action in result.recommended_actions %}
+        <li class="priority-{{ action.priority }}"><span>{{ loop.index }}</span><p>{{ action.text }}</p></li>
+        {% endfor %}
+      </ol>
+    </article>
+
+    <article class="result-card wide evidence-card">
+      <div class="card-title"><span>{{ '05' if result.llm_analysis else '04' }}</span><h3>Related official evidence</h3></div>
+      <div class="evidence-list">
+        {% for item in result.evidence %}
+        <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">
+          <div>
+            <span>{{ item.source }} · {{ item.chunk_type | title }} evidence · source updated {{ item.source_updated_date }}</span>
+            <h4>{{ item.title }}</h4>
+            <p>{{ item.evidence }}</p>
+            <p class="evidence-match">Why retrieved: {{ item.match_reasons | join(' · ') }}</p>
+            <small>Official source verified {{ item.last_verified_date }} · rank {{ item.rank }}{% if item.matched_action_stages %} · matched stage {{ item.matched_action_stages | join(', ') | replace('_', ' ') }}{% endif %}</small>
+          </div>
+          <span aria-hidden="true">→</span>
+        </a>
+        {% endfor %}
+      </div>
+    </article>
+
+    {% if developer_mode and result.developer_diagnostics %}
+    <article class="result-card wide developer-panel">
+      <div class="card-title"><span>DEV</span><h3>Decision trace</h3></div>
+      <div class="diagnostic-grid">
+        <section><strong>Local decision</strong><pre>{{ result.developer_diagnostics.local_decision | tojson(indent=2) }}</pre></section>
+        <section><strong>Fusion decision</strong><pre>{{ result.developer_diagnostics.fusion | tojson(indent=2) }}</pre></section>
+        <section><strong>RAG ranking</strong><pre>{{ result.developer_diagnostics.retrieval | tojson(indent=2) }}</pre></section>
+        <section><strong>URL analyser</strong><pre>{{ result.developer_diagnostics.url_analysis | tojson(indent=2) }}</pre></section>
+        <section class="diagnostic-wide"><strong>LLM request and telemetry</strong><pre>{{ result.developer_diagnostics.llm_run | tojson(indent=2) }}</pre></section>
+      </div>
+      <p class="diagnostic-note">Messages are redacted before appearing here. API keys and raw provider responses are never included.</p>
+    </article>
+    {% endif %}
+  </div>
+  <p class="disclaimer">{{ result.disclaimer }}</p>
+</section>
+{% endif %}
+{% endblock %}

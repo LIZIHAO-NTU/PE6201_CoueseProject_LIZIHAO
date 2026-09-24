@@ -1,0 +1,464 @@
+{
+  "model_version": "tfidf-logreg-fusion-0.1",
+  "selection_policy": "All hyperparameters and operating thresholds selected on validation only; gold test accessed after freeze.",
+  "library_versions": {
+    "scikit_learn": "1.9.0"
+  },
+  "dataset_hashes": {
+    "train": "cb49be9530c42135d63ff08b4d67f3b5bcc1798f5e60fbcae3de82ee2b7834b0",
+    "validation": "5b3eebcce7389c2e91c9c361059589a1f9d01d05bc1ffc79c99fb56a988debfb",
+    "gold_test": "e93e01c45db9d7f0ae55fd4234ac230289ff9fce1d1e5ffca2e53a2af7a1b770"
+  },
+  "dataset_sizes": {
+    "train": 48,
+    "validation": 12,
+    "gold_test": 30
+  },
+  "selected_config": {
+    "model_version": "tfidf-logreg-fusion-0.1",
+    "risk_model_file": "risk_text_v0.1.joblib",
+    "type_model_file": "scam_type_v0.1.joblib",
+    "risk_classes": [
+      "ambiguous",
+      "legitimate",
+      "scam"
+    ],
+    "type_classes": [
+      "e_commerce",
+      "government_impersonation",
+      "investment",
+      "job"
+    ],
+    "type_c": 4.0,
+    "c": 0.5,
+    "text_weight": 1.0,
+    "medium_threshold": 0.4,
+    "high_threshold": 0.5,
+    "ambiguous_threshold": 0.25,
+    "confidence_threshold": 0.4
+  },
+  "validation": {
+    "n": 12,
+    "exact_three_way_accuracy": 0.5,
+    "operational_scam_recall": 1.0,
+    "high_risk_scam_recall": 0.375,
+    "flagged_precision_for_scam": 0.8,
+    "high_risk_precision_for_scam": 1.0,
+    "legitimate_false_positive_rate": 0.3333,
+    "abstention_rate": 0.5833,
+    "ambiguous_abstention_recall": 1.0,
+    "confusion_matrix": {
+      "ambiguous": {
+        "ambiguous": 1
+      },
+      "scam": {
+        "ambiguous": 5,
+        "scam": 3
+      },
+      "legitimate": {
+        "legitimate": 2,
+        "ambiguous": 1
+      }
+    }
+  },
+  "validation_scam_type_accuracy": 0.25,
+  "gold_test": {
+    "n": 30,
+    "exact_three_way_accuracy": 0.6333,
+    "operational_scam_recall": 0.95,
+    "high_risk_scam_recall": 0.55,
+    "flagged_precision_for_scam": 0.8636,
+    "high_risk_precision_for_scam": 1.0,
+    "legitimate_false_positive_rate": 0.1429,
+    "abstention_rate": 0.3667,
+    "ambiguous_abstention_recall": 0.6667,
+    "confusion_matrix": {
+      "scam": {
+        "scam": 11,
+        "ambiguous": 8,
+        "legitimate": 1
+      },
+      "legitimate": {
+        "legitimate": 6,
+        "ambiguous": 1
+      },
+      "ambiguous": {
+        "legitimate": 1,
+        "ambiguous": 2
+      }
+    }
+  },
+  "gold_test_scam_type_accuracy": 0.55,
+  "gold_test_deployed_scam_type_accuracy": 0.5,
+  "gold_test_rules_baseline": {
+    "n": 30,
+    "exact_three_way_accuracy": 0.3,
+    "operational_scam_recall": 0.2,
+    "high_risk_scam_recall": 0.1,
+    "legitimate_false_positive_rate": 0.0,
+    "abstention_rate": 0.0667,
+    "ambiguous_abstention_recall": 0.0
+  },
+  "gold_test_predictions": [
+    {
+      "id": "msg_eval_gov_001",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.5039,
+      "probabilities": {
+        "ambiguous": 0.2278,
+        "legitimate": 0.2683,
+        "scam": 0.5039
+      }
+    },
+    {
+      "id": "msg_eval_gov_002",
+      "gold": "scam",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.4613,
+      "probabilities": {
+        "ambiguous": 0.2177,
+        "legitimate": 0.3209,
+        "scam": 0.4613
+      }
+    },
+    {
+      "id": "msg_eval_gov_003",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.5248,
+      "probabilities": {
+        "ambiguous": 0.1642,
+        "legitimate": 0.3111,
+        "scam": 0.5248
+      }
+    },
+    {
+      "id": "msg_eval_gov_004",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.5289,
+      "probabilities": {
+        "ambiguous": 0.2179,
+        "legitimate": 0.2532,
+        "scam": 0.5289
+      }
+    },
+    {
+      "id": "msg_eval_gov_005",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.502,
+      "probabilities": {
+        "ambiguous": 0.1905,
+        "legitimate": 0.3076,
+        "scam": 0.502
+      }
+    },
+    {
+      "id": "msg_eval_inv_001",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.5041,
+      "probabilities": {
+        "ambiguous": 0.2049,
+        "legitimate": 0.291,
+        "scam": 0.5041
+      }
+    },
+    {
+      "id": "msg_eval_inv_002",
+      "gold": "scam",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.4754,
+      "probabilities": {
+        "ambiguous": 0.2327,
+        "legitimate": 0.2919,
+        "scam": 0.4754
+      }
+    },
+    {
+      "id": "msg_eval_inv_003",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.5133,
+      "probabilities": {
+        "ambiguous": 0.1853,
+        "legitimate": 0.3015,
+        "scam": 0.5133
+      }
+    },
+    {
+      "id": "msg_eval_inv_004",
+      "gold": "scam",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.4357,
+      "probabilities": {
+        "ambiguous": 0.2263,
+        "legitimate": 0.338,
+        "scam": 0.4357
+      }
+    },
+    {
+      "id": "msg_eval_inv_005",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.5413,
+      "probabilities": {
+        "ambiguous": 0.2043,
+        "legitimate": 0.2544,
+        "scam": 0.5413
+      }
+    },
+    {
+      "id": "msg_eval_job_001",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.5045,
+      "probabilities": {
+        "ambiguous": 0.1913,
+        "legitimate": 0.3042,
+        "scam": 0.5045
+      }
+    },
+    {
+      "id": "msg_eval_job_002",
+      "gold": "scam",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.4899,
+      "probabilities": {
+        "ambiguous": 0.1994,
+        "legitimate": 0.3107,
+        "scam": 0.4899
+      }
+    },
+    {
+      "id": "msg_eval_job_003",
+      "gold": "scam",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.4269,
+      "probabilities": {
+        "ambiguous": 0.1928,
+        "legitimate": 0.3802,
+        "scam": 0.4269
+      }
+    },
+    {
+      "id": "msg_eval_job_004",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.5056,
+      "probabilities": {
+        "ambiguous": 0.1489,
+        "legitimate": 0.3455,
+        "scam": 0.5056
+      }
+    },
+    {
+      "id": "msg_eval_job_005",
+      "gold": "scam",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.4673,
+      "probabilities": {
+        "ambiguous": 0.233,
+        "legitimate": 0.2997,
+        "scam": 0.4673
+      }
+    },
+    {
+      "id": "msg_eval_ecom_001",
+      "gold": "scam",
+      "prediction": "legitimate",
+      "level": "low",
+      "score": 0.3867,
+      "probabilities": {
+        "ambiguous": 0.2018,
+        "legitimate": 0.4115,
+        "scam": 0.3867
+      }
+    },
+    {
+      "id": "msg_eval_ecom_002",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.5216,
+      "probabilities": {
+        "ambiguous": 0.1612,
+        "legitimate": 0.3172,
+        "scam": 0.5216
+      }
+    },
+    {
+      "id": "msg_eval_ecom_003",
+      "gold": "scam",
+      "prediction": "scam",
+      "level": "high",
+      "score": 0.5655,
+      "probabilities": {
+        "ambiguous": 0.1545,
+        "legitimate": 0.28,
+        "scam": 0.5655
+      }
+    },
+    {
+      "id": "msg_eval_ecom_004",
+      "gold": "scam",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.4556,
+      "probabilities": {
+        "ambiguous": 0.2094,
+        "legitimate": 0.335,
+        "scam": 0.4556
+      }
+    },
+    {
+      "id": "msg_eval_ecom_005",
+      "gold": "scam",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.4849,
+      "probabilities": {
+        "ambiguous": 0.2658,
+        "legitimate": 0.2492,
+        "scam": 0.4849
+      }
+    },
+    {
+      "id": "msg_eval_legit_001",
+      "gold": "legitimate",
+      "prediction": "legitimate",
+      "level": "low",
+      "score": 0.3585,
+      "probabilities": {
+        "ambiguous": 0.2172,
+        "legitimate": 0.4243,
+        "scam": 0.3585
+      }
+    },
+    {
+      "id": "msg_eval_legit_002",
+      "gold": "legitimate",
+      "prediction": "legitimate",
+      "level": "low",
+      "score": 0.3581,
+      "probabilities": {
+        "ambiguous": 0.197,
+        "legitimate": 0.4449,
+        "scam": 0.3581
+      }
+    },
+    {
+      "id": "msg_eval_legit_003",
+      "gold": "legitimate",
+      "prediction": "legitimate",
+      "level": "low",
+      "score": 0.3807,
+      "probabilities": {
+        "ambiguous": 0.1629,
+        "legitimate": 0.4564,
+        "scam": 0.3807
+      }
+    },
+    {
+      "id": "msg_eval_legit_004",
+      "gold": "legitimate",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.4517,
+      "probabilities": {
+        "ambiguous": 0.212,
+        "legitimate": 0.3363,
+        "scam": 0.4517
+      }
+    },
+    {
+      "id": "msg_eval_legit_005",
+      "gold": "legitimate",
+      "prediction": "legitimate",
+      "level": "low",
+      "score": 0.3772,
+      "probabilities": {
+        "ambiguous": 0.2155,
+        "legitimate": 0.4073,
+        "scam": 0.3772
+      }
+    },
+    {
+      "id": "msg_eval_legit_006",
+      "gold": "legitimate",
+      "prediction": "legitimate",
+      "level": "low",
+      "score": 0.3633,
+      "probabilities": {
+        "ambiguous": 0.2222,
+        "legitimate": 0.4145,
+        "scam": 0.3633
+      }
+    },
+    {
+      "id": "msg_eval_legit_007",
+      "gold": "legitimate",
+      "prediction": "legitimate",
+      "level": "low",
+      "score": 0.3474,
+      "probabilities": {
+        "ambiguous": 0.1595,
+        "legitimate": 0.4931,
+        "scam": 0.3474
+      }
+    },
+    {
+      "id": "msg_eval_amb_001",
+      "gold": "ambiguous",
+      "prediction": "legitimate",
+      "level": "low",
+      "score": 0.3786,
+      "probabilities": {
+        "ambiguous": 0.2013,
+        "legitimate": 0.4201,
+        "scam": 0.3786
+      }
+    },
+    {
+      "id": "msg_eval_amb_002",
+      "gold": "ambiguous",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.3797,
+      "probabilities": {
+        "ambiguous": 0.3272,
+        "legitimate": 0.2932,
+        "scam": 0.3797
+      }
+    },
+    {
+      "id": "msg_eval_amb_003",
+      "gold": "ambiguous",
+      "prediction": "ambiguous",
+      "level": "medium",
+      "score": 0.3862,
+      "probabilities": {
+        "ambiguous": 0.2457,
+        "legitimate": 0.3681,
+        "scam": 0.3862
+      }
+    }
+  ]
+}

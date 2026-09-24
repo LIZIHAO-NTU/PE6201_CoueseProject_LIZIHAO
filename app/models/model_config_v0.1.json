@@ -1,0 +1,23 @@
+{
+  "model_version": "tfidf-logreg-fusion-0.1",
+  "risk_model_file": "risk_text_v0.1.joblib",
+  "type_model_file": "scam_type_v0.1.joblib",
+  "risk_classes": [
+    "ambiguous",
+    "legitimate",
+    "scam"
+  ],
+  "type_classes": [
+    "e_commerce",
+    "government_impersonation",
+    "investment",
+    "job"
+  ],
+  "type_c": 4.0,
+  "c": 0.5,
+  "text_weight": 1.0,
+  "medium_threshold": 0.4,
+  "high_threshold": 0.5,
+  "ambiguous_threshold": 0.25,
+  "confidence_threshold": 0.4
+}

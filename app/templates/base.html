@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="ScamLens SG - evidence-grounded scam risk assessment for suspicious messages and URLs.">
+  <title>{% block title %}ScamLens SG{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="{{ url_for('main.index') }}" aria-label="ScamLens SG home">
+      <span class="brand-mark" aria-hidden="true">SL</span>
+      <span><strong>ScamLens</strong><small>SG</small></span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="{{ url_for('main.index') }}" {% if request.endpoint == 'main.index' %}aria-current="page"{% endif %}>Analyse</a>
+      <a href="{{ url_for('main.evaluation') }}" {% if request.endpoint == 'main.evaluation' %}aria-current="page"{% endif %}>Evaluation</a>
+      <a href="{{ url_for('main.about') }}" {% if request.endpoint == 'main.about' %}aria-current="page"{% endif %}>About</a>
+      {% if developer_mode %}<a href="{{ url_for('main.developer') }}" {% if request.endpoint == 'main.developer' %}aria-current="page"{% endif %}>Diagnostics</a>{% endif %}
+      {% if developer_mode_available %}
+      <form class="developer-toggle-form" action="{{ url_for('main.toggle_developer_mode') }}" method="post">
+        <button class="developer-toggle {% if developer_mode %}is-on{% endif %}" type="submit" aria-pressed="{{ 'true' if developer_mode else 'false' }}">
+          <span class="toggle-dot" aria-hidden="true"></span>Developer {{ 'on' if developer_mode else 'off' }}
+        </button>
+      </form>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer>
+    <div class="project-credit">
+      <span class="credit-label">NTU · PE6201 Emerging AI Technologies</span>
+      <strong>End-of-Course Project</strong>
+      <span>LI ZIHAO · G2606399B</span>
+    </div>
+    <div class="footer-safety">
+      <p>Student prototype · Not affiliated with or endorsed by the Singapore Government</p>
+      <p>Unsure if it is a scam? Call the 24/7 ScamShield Helpline at <strong>1799</strong>.</p>
+    </div>
+  </footer>
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</body>
+</html>

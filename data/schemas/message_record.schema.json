@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://scamlens.local/schemas/message_record.schema.json",
+  "title": "ScamLens SG message record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "message",
+    "channel",
+    "language",
+    "risk_label",
+    "primary_type",
+    "mechanisms",
+    "urls",
+    "source_type",
+    "source_name",
+    "source_url",
+    "is_synthetic",
+    "campaign_group",
+    "split",
+    "pii_removed",
+    "review_status",
+    "annotation_confidence",
+    "label_rationale"
+  ],
+  "properties": {
+    "id": {"type": "string", "pattern": "^msg_[a-z0-9_]{4,64}$"},
+    "message": {"type": "string", "minLength": 1, "maxLength": 8000},
+    "channel": {"enum": ["sms", "whatsapp", "telegram", "email", "other"]},
+    "language": {"const": "en"},
+    "risk_label": {"enum": ["scam", "legitimate", "ambiguous"]},
+    "primary_type": {
+      "enum": [
+        "government_impersonation",
+        "investment",
+        "job",
+        "e_commerce",
+        "other_scam",
+        "uncertain",
+        "not_applicable"
+      ]
+    },
+    "mechanisms": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "urgency_or_threat",
+          "credential_request",
+          "payment_request",
+          "unrealistic_reward",
+          "secrecy_or_isolation",
+          "external_link",
+          "brand_impersonation",
+          "suspicious_url",
+          "off_platform_payment",
+          "app_installation",
+          "remote_access_request",
+          "social_proof_manipulation"
+        ]
+      }
+    },
+    "urls": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "format": "uri"}
+    },
+    "source_type": {
+      "enum": [
+        "official_public_example",
+        "licensed_public_dataset",
+        "synthetic_from_advisory",
+        "authored_hard_negative",
+        "consented_anonymised"
+      ]
+    },
+    "source_name": {"type": "string", "minLength": 2, "maxLength": 200},
+    "source_url": {"type": ["string", "null"], "format": "uri"},
+    "is_synthetic": {"type": "boolean"},
+    "campaign_group": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,79}$"},
+    "split": {"enum": ["unassigned", "train", "validation", "test"]},
+    "pii_removed": {"type": "boolean"},
+    "review_status": {"enum": ["candidate", "reviewed", "gold", "rejected"]},
+    "annotation_confidence": {"enum": ["low", "medium", "high"]},
+    "label_rationale": {"type": "string", "minLength": 10, "maxLength": 1000},
+    "annotator": {"type": ["string", "null"], "maxLength": 100},
+    "reviewer": {"type": ["string", "null"], "maxLength": 100},
+    "notes": {"type": ["string", "null"], "maxLength": 2000}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"risk_label": {"const": "legitimate"}}},
+      "then": {"properties": {"primary_type": {"const": "not_applicable"}}}
+    },
+    {
+      "if": {"properties": {"risk_label": {"const": "ambiguous"}}},
+      "then": {"properties": {"primary_type": {"const": "uncertain"}}}
+    },
+    {
+      "if": {"properties": {"source_type": {"const": "synthetic_from_advisory"}}},
+      "then": {
+        "properties": {
+          "is_synthetic": {"const": true},
+          "source_url": {"type": "string", "format": "uri"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"review_status": {"const": "gold"}}},
+      "then": {
+        "properties": {
+          "split": {"const": "test"},
+          "pii_removed": {"const": true}
+        }
+      }
+    }
+  ]
+}
+

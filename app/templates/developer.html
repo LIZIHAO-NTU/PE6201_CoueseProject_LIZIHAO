@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+{% block title %}Developer diagnostics · ScamLens SG{% endblock %}
+{% block content %}
+<section class="page-intro developer-intro">
+  <div class="eyebrow">Developer mode is on</div>
+  <h1>One place for the full decision trace.</h1>
+  <p>Inspect the model configuration, OpenRouter status, token use, estimated cost, latency and fallback behaviour. Raw API keys and messages are never displayed.</p>
+</section>
+
+<section class="developer-dashboard">
+  <article class="developer-status-card wide model-switcher-card">
+    <div class="card-title"><span>01</span><h2>Model switcher</h2></div>
+    <p class="model-switcher-intro">The selected model applies to LLM-enhanced assessments while this browser session remains in developer mode. Local analysis and safety fusion stay unchanged.</p>
+    <form class="model-switcher-form" action="{{ url_for('main.select_developer_model') }}" method="post">
+      <label for="llm-model">Active OpenRouter model</label>
+      <div>
+        <select id="llm-model" name="llm_model">
+          {% for model in model_profiles %}
+          <option value="{{ model.id }}" {% if model.id == runtime.model %}selected{% endif %}>{{ model.name }} — {{ model.tier }}</option>
+          {% endfor %}
+        </select>
+        <button class="secondary-button" type="submit">Switch model</button>
+      </div>
+    </form>
+    <div class="model-profile-grid">
+      {% for model in model_profiles %}
+      <section class="model-profile {% if model.id == runtime.model %}is-active{% endif %}">
+        <span>{{ model.tier }}</span>
+        <strong>{{ model.name }}</strong>
+        <code>{{ model.id }}</code>
+        <p>{{ model.use_case }}</p>
+        <small>US${{ '%.2f'|format(model.input_cost_per_million) }} input / US${{ '%.2f'|format(model.output_cost_per_million) }} output per 1M tokens</small>
+      </section>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="developer-status-card">
+    <div class="card-title"><span>02</span><h2>Runtime configuration</h2></div>
+    <dl class="key-values">
+      <div><dt>LLM model</dt><dd>{{ runtime.model }}</dd></div>
+      <div><dt>API key</dt><dd><span class="status {{ 'ready' if runtime.api_key_configured else 'next' }}">{{ 'Configured' if runtime.api_key_configured else 'Missing' }}</span></dd></div>
+      <div><dt>Maximum output</dt><dd>{{ runtime.max_output_tokens }} tokens</dd></div>
+      <div><dt>Timeout</dt><dd>{{ runtime.timeout_seconds }} seconds</dd></div>
+      <div><dt>Local session budget</dt><dd>US${{ '%.2f'|format(runtime.local_budget_usd) }}</dd></div>
+      <div><dt>RAG corpus</dt><dd>{{ runtime.rag.chunks }} chunks · {{ runtime.rag.source_pages }} source pages</dd></div>
+      <div><dt>Retriever</dt><dd>{{ runtime.rag.retriever_version }}</dd></div>
+      <div><dt>Evidence verified</dt><dd>{{ runtime.rag.last_verified_date }}</dd></div>
+    </dl>
+    <form action="{{ url_for('main.refresh_openrouter_status') }}" method="post">
+      <button class="secondary-button" type="submit">Refresh OpenRouter key status</button>
+    </form>
+    {% if api_status %}
+    <div class="api-status {{ api_status.status }}">
+      {% if api_status.status == 'available' %}
+      <strong>Key endpoint responded</strong>
+      <p>Limit: {{ api_status.limit if api_status.limit is not none else 'not reported' }} · Remaining: {{ api_status.limit_remaining if api_status.limit_remaining is not none else 'not reported' }} · Usage: {{ api_status.usage if api_status.usage is not none else 'not reported' }}</p>
+      {% else %}<strong>Status unavailable</strong><p>{{ api_status.message }}</p>{% endif %}
+    </div>
+    {% endif %}
+  </article>
+
+  <article class="developer-status-card">
+    <div class="card-title"><span>03</span><h2>Current server-session totals</h2></div>
+    <div class="telemetry-grid">
+      <div><strong>{{ telemetry.calls }}</strong><span>LLM attempts</span></div>
+      <div><strong>{{ telemetry.successes }}</strong><span>Successful</span></div>
+      <div><strong>{{ telemetry.fallbacks }}</strong><span>Fallbacks</span></div>
+      <div><strong>{{ telemetry.total_tokens }}</strong><span>Total tokens</span></div>
+      <div><strong>US${{ '%.6f'|format(telemetry.estimated_cost_usd) }}</strong><span>Estimated spend</span></div>
+    </div>
+    <p class="diagnostic-note">Cost uses provider-reported cost when available; otherwise it is estimated from configurable per-token rates.</p>
+  </article>
+
+  <article class="developer-status-card wide">
+    <div class="card-title"><span>04</span><h2>Model comparison</h2></div>
+    {% if telemetry.by_model %}
+    <div class="table-wrap">
+      <table class="model-comparison-table">
+        <thead><tr><th>Model</th><th>Calls</th><th>Successful</th><th>Fallbacks</th><th>Average latency</th><th>Tokens</th><th>Estimated cost</th></tr></thead>
+        <tbody>
+          {% for item in telemetry.by_model %}
+          <tr>
+            <td><code>{{ item.model }}</code></td>
+            <td>{{ item.calls }}</td>
+            <td>{{ item.successes }}</td>
+            <td>{{ item.fallbacks }}</td>
+            <td>{{ (item.average_latency_ms|string + ' ms') if item.average_latency_ms is not none else '—' }}</td>
+            <td>{{ item.total_tokens }}</td>
+            <td>US${{ '%.6f'|format(item.estimated_cost_usd) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="empty-state">Run at least one LLM-enhanced assessment to begin comparing models.</p>{% endif %}
+  </article>
+
+  <article class="developer-status-card wide benchmark-control-card">
+    <div class="card-title"><span>05</span><h2>Controlled benchmark</h2></div>
+    <p class="model-switcher-intro">Run the same labelled cases through the local baseline and selected LLM-fusion variants. Results are written to local SQLite without storing raw messages.</p>
+    {% if started_benchmark %}
+    <div class="api-status {{ 'available' if started_benchmark.status == 'completed' else started_benchmark.status }}">
+      <strong>{{ 'Benchmark complete' if started_benchmark.status == 'completed' else ('Benchmark started' if started_benchmark.status == 'running' else 'Benchmark ' + (started_benchmark.status | replace('_', ' '))) }}</strong>
+      <p>Run {{ started_benchmark.run_id }} {{ 'finished and its automatic summary is available below.' if started_benchmark.status == 'completed' else 'is executing in the background. This page refreshes while it is running.' }}</p>
+    </div>
+    {% endif %}
+    <form class="benchmark-form" action="{{ url_for('main.start_benchmark') }}" method="post" data-max-output-tokens="{{ runtime.max_output_tokens }}" data-assumed-input-tokens="1800">
+      <label><span>Evaluation dataset</span>
+        <select name="dataset_id">
+          {% for dataset_id, dataset in dataset_catalog.items() %}
+          <option value="{{ dataset_id }}">{{ dataset.name }} · {{ dataset.evidence_level }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label><span>Cases</span><input type="number" name="case_limit" min="1" max="{{ runtime.benchmark_max_cases }}" value="10" required></label>
+      <label><span>Per-run cost cap (US$)</span><input type="number" name="budget_cap_usd" min="0" max="{{ runtime.benchmark_max_budget_usd }}" step="0.01" value="0.50" required></label>
+      <fieldset class="benchmark-models">
+        <legend>System variants</legend>
+        <label class="locked-variant"><input type="checkbox" checked disabled><span>Local baseline · always included</span></label>
+        {% for model in model_profiles %}
+        <label><input type="checkbox" name="models" value="{{ model.id }}" data-input-rate="{{ model.input_cost_per_million }}" data-output-rate="{{ model.output_cost_per_million }}"><span>{{ model.name }} · {{ model.tier }}</span></label>
+        {% endfor %}
+      </fieldset>
+      <label class="benchmark-confirm"><input type="checkbox" name="confirm_paid_calls" value="yes"><span>I confirm that selected LLM variants make paid OpenRouter calls.</span></label>
+      <div class="benchmark-estimate" id="benchmark-estimate">Estimated maximum: US$0.0000 · 0 paid calls</div>
+      <button class="secondary-button" type="submit">Run controlled benchmark</button>
+    </form>
+    <p class="diagnostic-note">The server estimates a conservative maximum before starting and rejects a run above its cap. Local-only runs cost nothing. A benchmark never stores its message text in SQLite or exports.</p>
+  </article>
+
+  <article class="developer-status-card wide">
+    <div class="card-title"><span>06</span><h2>Persistent local observability</h2></div>
+    <div class="telemetry-grid persistent-grid">
+      <div><strong>{{ persistent_telemetry.assessments }}</strong><span>Saved assessments</span></div>
+      <div><strong>{{ persistent_telemetry.llm_attempts }}</strong><span>LLM requests</span></div>
+      <div><strong>{{ persistent_telemetry.fallbacks }}</strong><span>Fallbacks</span></div>
+      <div><strong>{{ persistent_telemetry.total_tokens }}</strong><span>Saved tokens</span></div>
+      <div><strong>US${{ '%.6f'|format(persistent_telemetry.estimated_cost_usd) }}</strong><span>Saved cost</span></div>
+      <div><strong>{{ (persistent_telemetry.average_latency_ms|string + ' ms') if persistent_telemetry.average_latency_ms is not none else '—' }}</strong><span>Average end-to-end latency</span></div>
+    </div>
+    <p class="diagnostic-note">These totals survive Flask restarts. They describe operational behaviour only; accuracy is calculated only for labelled benchmark cases.</p>
+    {% if persistent_telemetry.by_model %}
+    <div class="table-wrap persistent-model-table">
+      <table><thead><tr><th>Stored model/mode</th><th>Assessments</th><th>Successful</th><th>Fallbacks</th><th>Average latency</th><th>Tokens</th><th>Cost</th></tr></thead>
+      <tbody>{% for item in persistent_telemetry.by_model %}<tr><td><code>{{ item.model }}</code></td><td>{{ item.assessments }}</td><td>{{ item.successes }}</td><td>{{ item.fallbacks }}</td><td>{{ (item.average_latency_ms|string + ' ms') if item.average_latency_ms is not none else '—' }}</td><td>{{ item.total_tokens }}</td><td>US${{ '%.6f'|format(item.estimated_cost_usd) }}</td></tr>{% endfor %}</tbody></table>
+    </div>
+    {% endif %}
+  </article>
+
+  <article class="developer-status-card wide">
+    <div class="card-title"><span>07</span><h2>Benchmark history</h2></div>
+    {% if benchmarks %}
+    <div class="table-wrap">
+      <table class="benchmark-history">
+        <thead><tr><th>Run</th><th>Dataset</th><th>Status</th><th>Progress</th><th>Variants</th><th>Cost</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for run in benchmarks %}
+          <tr {% if run.status == 'running' %}class="benchmark-running"{% endif %}>
+            <td><code>{{ run.run_id }}</code>{% if run.is_frozen %}<span class="status ready">Frozen</span>{% endif %}</td>
+            <td>{{ run.dataset_id }}</td>
+            <td><span class="status {{ 'ready' if run.status == 'completed' else 'next' }}">{{ run.status | replace('_', ' ') }}</span></td>
+            <td>{{ run.progress_completed }} / {{ run.progress_total }}</td>
+            <td>{{ run.variants | length }}</td>
+            <td>US${{ '%.6f'|format(run.actual_cost_usd) }}</td>
+            <td class="benchmark-actions">
+              <a href="{{ url_for('main.export_benchmark', run_id=run.run_id, format_name='csv') }}">CSV</a>
+              <a href="{{ url_for('main.export_benchmark', run_id=run.run_id, format_name='json') }}">JSON</a>
+              {% if run.summary and not run.is_frozen %}
+              <form action="{{ url_for('main.freeze_benchmark', run_id=run.run_id) }}" method="post"><button type="submit">Freeze</button></form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="empty-state">No persistent benchmark has been run yet.</p>{% endif %}
+  </article>
+
+  {% if latest_benchmark and latest_benchmark.summary %}
+  <article class="developer-status-card wide">
+    <div class="card-title"><span>08</span><h2>Latest automatic performance summary</h2></div>
+    <p class="model-switcher-intro">{{ latest_benchmark.summary.dataset_name }} · {{ latest_benchmark.summary.evidence_level }}</p>
+    <div class="table-wrap">
+      <table class="performance-summary-table">
+        <thead><tr><th>Variant</th><th>Cases</th><th>Exact</th><th>Scam recall</th><th>Legit FPR</th><th>Ambiguous abstention</th><th>Type accuracy</th><th>Critical false reassurance</th><th>Structured success</th><th>P95 latency</th><th>Tokens</th><th>Cost</th></tr></thead>
+        <tbody>
+          {% for item in latest_benchmark.summary.variants %}
+          <tr>
+            <td><code>{{ item.variant }}</code></td>
+            <td>{{ item.cases }}</td>
+            <td>{{ ('%.1f%%'|format(item.exact_three_way_accuracy * 100)) if item.exact_three_way_accuracy is not none else '—' }}</td>
+            <td>{{ ('%.1f%%'|format(item.operational_scam_recall * 100)) if item.operational_scam_recall is not none else '—' }}</td>
+            <td>{{ ('%.1f%%'|format(item.legitimate_false_positive_rate * 100)) if item.legitimate_false_positive_rate is not none else '—' }}</td>
+            <td>{{ ('%.1f%%'|format(item.ambiguous_abstention_recall * 100)) if item.ambiguous_abstention_recall is not none else '—' }}</td>
+            <td>{{ ('%.1f%%'|format(item.scam_type_accuracy * 100)) if item.scam_type_accuracy is not none else '—' }}</td>
+            <td>{{ item.critical_false_reassurance_count }}</td>
+            <td>{{ ('%.1f%%'|format(item.structured_output_success_rate * 100)) if item.structured_output_success_rate is not none else 'N/A' }}</td>
+            <td>{{ (item.p95_latency_ms|string + ' ms') if item.p95_latency_ms is not none else '—' }}</td>
+            <td>{{ item.total_tokens }}</td>
+            <td>US${{ '%.6f'|format(item.estimated_cost_usd) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% set retrieval = latest_benchmark.summary.retrieval %}
+    <div class="retrieval-summary-line">
+      <strong>Automatic RAG regression:</strong>
+      <span>Top-1 {{ '%.1f%%'|format(retrieval.top1_acceptable_accuracy * 100) }}</span>
+      <span>Top-3 {{ '%.1f%%'|format(retrieval.top3_expected_coverage * 100) }}</span>
+      {% if retrieval.top3_action_stage_coverage is defined and retrieval.top3_action_stage_coverage is not none %}<span>Stage coverage {{ '%.1f%%'|format(retrieval.top3_action_stage_coverage * 100) }}</span>{% endif %}
+      <span>MRR {{ '%.3f'|format(retrieval.mean_reciprocal_rank) }}</span>
+      <span>Provenance {{ '%.1f%%'|format(retrieval.provenance_completeness * 100) }}</span>
+    </div>
+  </article>
+  {% endif %}
+
+  <article class="developer-status-card wide">
+    <div class="card-title"><span>{{ '09' if latest_benchmark and latest_benchmark.summary else '08' }}</span><h2>Latest LLM run</h2></div>
+    {% if telemetry.last_run %}<pre>{{ telemetry.last_run | tojson(indent=2) }}</pre>{% else %}<p class="empty-state">No LLM-enhanced assessment has been attempted in this server session.</p>{% endif %}
+  </article>
+
+  <article class="developer-status-card wide architecture-summary">
+    <div class="card-title"><span>{{ '10' if latest_benchmark and latest_benchmark.summary else '09' }}</span><h2>Decision architecture</h2></div>
+    <div class="architecture-flow">
+      <b>Message</b><span>→</span><b>Local ML + rules</b><span>→</span><b>Static URL analysis</b><span>→</span><b>Official-source RAG</b><span>→</span><b>Optional LLM review</b><span>→</span><b>Conservative fusion</b><span>→</span><b>Deterministic intervention</b>
+    </div>
+  </article>
+</section>
+{% endblock %}
