@@ -21,13 +21,17 @@ def _llm_settings(api_key="test-key"):
 
 
 def _fake_llm(assessment="likely_scam", scam_type="job"):
-    def transport(**_kwargs):
+    def transport(**kwargs):
+        context = json.loads(kwargs["payload"]["messages"][1]["content"])
+        evidence_ids = [
+            item["id"] for item in context["retrieved_official_evidence"] if item.get("id")
+        ]
         content = {
             "assessment": assessment,
             "scam_type": scam_type,
             "red_flags": ["Requests an unusual payment"],
             "missing_context": ["Sender identity is not independently verified"],
-            "evidence_ids_used": ["scamshield-general-check"],
+            "evidence_ids_used": evidence_ids[:1],
             "plain_language_explanation": "The message contains a pattern that should be verified independently.",
             "independent_verification_needed": True,
         }
@@ -213,6 +217,34 @@ def test_llm_cannot_downgrade_a_local_high_risk_result():
     )
     assert result["risk_level"] == "high"
     assert "preserved" in " ".join(result["fusion_reasons"])
+
+
+def test_llm_hallucinated_evidence_id_triggers_safe_local_fallback():
+    def hallucinating_transport(**_kwargs):
+        content = {
+            "assessment": "likely_scam",
+            "scam_type": "job",
+            "red_flags": ["Requests an unusual payment"],
+            "missing_context": ["Sender identity is not verified"],
+            "evidence_ids_used": ["invented-source-id"],
+            "plain_language_explanation": "This explanation cites a source that was not retrieved.",
+            "independent_verification_needed": True,
+        }
+        return {
+            "model": "google/gemini-2.5-flash",
+            "choices": [{"message": {"content": json.dumps(content)}}],
+            "usage": {"prompt_tokens": 200, "completion_tokens": 60},
+        }, 100.0
+
+    result = analyse_message(
+        message="Part-time role; pay a deposit to start.",
+        use_llm=True,
+        llm_settings=_llm_settings(),
+        llm_transport=hallucinating_transport,
+    )
+    assert result["analysis_mode"]["used"] == "local"
+    assert result["analysis_mode"]["fell_back"] is True
+    assert "not retrieved" in result["llm_analysis"]["fallback_reason"]
 
 
 def test_missing_key_falls_back_to_local_without_failure():

@@ -44,21 +44,54 @@ OUTPUT_SCHEMA = {
 }
 
 
-def _validate_output(value: object) -> dict:
+def _validate_string_list(
+    value: object, *, key: str, maximum_items: int, maximum_length: int
+) -> list[str]:
+    if not isinstance(value, list) or len(value) > maximum_items:
+        raise ValueError(f"LLM output has invalid {key}")
+    normalized: list[str] = []
+    for item in value:
+        if not isinstance(item, str) or not item.strip() or len(item.strip()) > maximum_length:
+            raise ValueError(f"LLM output has invalid {key}")
+        normalized.append(item.strip())
+    if len(normalized) != len(set(normalized)):
+        raise ValueError(f"LLM output has duplicate {key}")
+    return normalized
+
+
+def _validate_output(value: object, *, allowed_evidence_ids: set[str]) -> dict:
     if not isinstance(value, dict):
         raise ValueError("LLM output is not an object")
     if value.get("assessment") not in ASSESSMENTS or value.get("scam_type") not in SCAM_TYPES:
         raise ValueError("LLM output contains an unsupported assessment")
-    for key, maximum in (("red_flags", 5), ("missing_context", 3), ("evidence_ids_used", 2)):
-        items = value.get(key)
-        if not isinstance(items, list) or len(items) > maximum or not all(isinstance(item, str) for item in items):
-            raise ValueError(f"LLM output has invalid {key}")
+    red_flags = _validate_string_list(
+        value.get("red_flags"), key="red_flags", maximum_items=5, maximum_length=240
+    )
+    missing_context = _validate_string_list(
+        value.get("missing_context"),
+        key="missing_context",
+        maximum_items=3,
+        maximum_length=240,
+    )
+    evidence_ids = _validate_string_list(
+        value.get("evidence_ids_used"),
+        key="evidence_ids_used",
+        maximum_items=2,
+        maximum_length=120,
+    )
+    if not set(evidence_ids).issubset(allowed_evidence_ids):
+        raise ValueError("LLM output cited evidence that was not retrieved")
     explanation = value.get("plain_language_explanation")
     if not isinstance(explanation, str) or not explanation.strip() or len(explanation) > 900:
         raise ValueError("LLM output has an invalid explanation")
     if not isinstance(value.get("independent_verification_needed"), bool):
         raise ValueError("LLM output has an invalid verification flag")
-    return value
+    validated = dict(value)
+    validated["red_flags"] = red_flags
+    validated["missing_context"] = missing_context
+    validated["evidence_ids_used"] = evidence_ids
+    validated["plain_language_explanation"] = explanation.strip()
+    return validated
 
 
 def _extract_content(response: dict) -> str:
@@ -130,7 +163,15 @@ def analyse_with_llm(*, context: dict, settings: dict, transport=None) -> dict:
             except OpenRouterError as error:
                 if not error.retryable or provider_attempts >= 2:
                     raise
-        output = _validate_output(json.loads(_extract_content(response)))
+        allowed_evidence_ids = {
+            str(item["id"])
+            for item in context.get("retrieved_official_evidence", [])
+            if isinstance(item, dict) and item.get("id")
+        }
+        output = _validate_output(
+            json.loads(_extract_content(response)),
+            allowed_evidence_ids=allowed_evidence_ids,
+        )
         usage = response.get("usage", {}) or {}
         cost = float(usage.get("cost") or _estimate_cost(usage, settings))
         result = {

@@ -12,6 +12,7 @@
     <div class="card-title"><span>01</span><h2>Model switcher</h2></div>
     <p class="model-switcher-intro">The selected model applies to LLM-enhanced assessments while this browser session remains in developer mode. Local analysis and safety fusion stay unchanged.</p>
     <form class="model-switcher-form" action="{{ url_for('main.select_developer_model') }}" method="post">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
       <label for="llm-model">Active OpenRouter model</label>
       <div>
         <select id="llm-model" name="llm_model">
@@ -48,6 +49,7 @@
       <div><dt>Evidence verified</dt><dd>{{ runtime.rag.last_verified_date }}</dd></div>
     </dl>
     <form action="{{ url_for('main.refresh_openrouter_status') }}" method="post">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
       <button class="secondary-button" type="submit">Refresh OpenRouter key status</button>
     </form>
     {% if api_status %}
@@ -106,6 +108,7 @@
     </div>
     {% endif %}
     <form class="benchmark-form" action="{{ url_for('main.start_benchmark') }}" method="post" data-max-output-tokens="{{ runtime.max_output_tokens }}" data-assumed-input-tokens="1800">
+      <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
       <label><span>Evaluation dataset</span>
         <select name="dataset_id">
           {% for dataset_id, dataset in dataset_catalog.items() %}
@@ -167,7 +170,10 @@
               <a href="{{ url_for('main.export_benchmark', run_id=run.run_id, format_name='csv') }}">CSV</a>
               <a href="{{ url_for('main.export_benchmark', run_id=run.run_id, format_name='json') }}">JSON</a>
               {% if run.summary and not run.is_frozen %}
-              <form action="{{ url_for('main.freeze_benchmark', run_id=run.run_id) }}" method="post"><button type="submit">Freeze</button></form>
+              <form action="{{ url_for('main.freeze_benchmark', run_id=run.run_id) }}" method="post">
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+                <button type="submit">Freeze</button>
+              </form>
               {% endif %}
             </td>
           </tr>

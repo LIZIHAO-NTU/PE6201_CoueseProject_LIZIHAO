@@ -12,6 +12,7 @@ from .services.telemetry import telemetry_store
 
 
 bp = Blueprint("main", __name__)
+MAX_MESSAGE_CHARS = 8_000
 
 
 def _evaluation_store():
@@ -85,6 +86,13 @@ def analyse():
             result=None,
             error="Paste a message before running the assessment.",
         ), 400
+    if len(message) > MAX_MESSAGE_CHARS:
+        return render_template(
+            "index.html",
+            result=None,
+            error=f"The message must be at most {MAX_MESSAGE_CHARS:,} characters.",
+            original_message=message[:MAX_MESSAGE_CHARS],
+        ), 400
 
     use_llm = request.form.get("use_llm") == "on"
     result = analyse_message(
@@ -107,17 +115,43 @@ def analyse():
 
 @bp.post("/api/v1/analyse")
 def analyse_api():
-    payload = request.get_json(silent=True) or {}
-    message = str(payload.get("message", "")).strip()
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({"error": "Request body must be a JSON object."}), 400
+    raw_message = payload.get("message")
+    if not isinstance(raw_message, str):
+        return jsonify({"error": "The message field must be a string."}), 400
+    message = raw_message.strip()
     if not message:
         return jsonify({"error": "The message field is required."}), 400
+    if len(message) > MAX_MESSAGE_CHARS:
+        return jsonify(
+            {"error": f"The message field must be at most {MAX_MESSAGE_CHARS} characters."}
+        ), 400
+
+    boolean_fields = (
+        "clicked_link",
+        "shared_credentials",
+        "transferred_money",
+        "use_llm",
+    )
+    invalid_boolean = next(
+        (
+            field
+            for field in boolean_fields
+            if field in payload and not isinstance(payload[field], bool)
+        ),
+        None,
+    )
+    if invalid_boolean:
+        return jsonify({"error": f"The {invalid_boolean} field must be a JSON boolean."}), 400
 
     result = analyse_message(
         message=message,
-        clicked_link=bool(payload.get("clicked_link", False)),
-        shared_credentials=bool(payload.get("shared_credentials", False)),
-        transferred_money=bool(payload.get("transferred_money", False)),
-        use_llm=bool(payload.get("use_llm", False)),
+        clicked_link=payload.get("clicked_link", False),
+        shared_credentials=payload.get("shared_credentials", False),
+        transferred_money=payload.get("transferred_money", False),
+        use_llm=payload.get("use_llm", False),
         developer_mode=False,
         llm_settings=_llm_settings(),
     )

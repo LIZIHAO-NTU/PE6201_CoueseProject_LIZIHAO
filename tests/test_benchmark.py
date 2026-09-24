@@ -4,13 +4,17 @@ from app.services.benchmark import run_benchmark
 from app.services.evaluation_store import EvaluationStore
 
 
-def _transport(**_kwargs):
+def _transport(**kwargs):
+    context = json.loads(kwargs["payload"]["messages"][1]["content"])
+    evidence_ids = [
+        item["id"] for item in context["retrieved_official_evidence"] if item.get("id")
+    ]
     output = {
         "assessment": "likely_scam",
         "scam_type": "government_impersonation",
         "red_flags": ["Requests sensitive action"],
         "missing_context": ["Sender is not independently verified"],
-        "evidence_ids_used": ["gov-safe-account-transfer"],
+        "evidence_ids_used": evidence_ids[:1],
         "plain_language_explanation": "The message should be verified through an official channel.",
         "independent_verification_needed": True,
     }

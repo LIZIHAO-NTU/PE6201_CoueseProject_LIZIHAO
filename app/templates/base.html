@@ -23,6 +23,7 @@
       {% if developer_mode %}<a href="{{ url_for('main.developer') }}" {% if request.endpoint == 'main.developer' %}aria-current="page"{% endif %}>Diagnostics</a>{% endif %}
       {% if developer_mode_available %}
       <form class="developer-toggle-form" action="{{ url_for('main.toggle_developer_mode') }}" method="post">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
         <button class="developer-toggle {% if developer_mode %}is-on{% endif %}" type="submit" aria-pressed="{{ 'true' if developer_mode else 'false' }}">
           <span class="toggle-dot" aria-hidden="true"></span>Developer {{ 'on' if developer_mode else 'off' }}
         </button>

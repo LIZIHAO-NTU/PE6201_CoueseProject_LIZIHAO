@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import os
+from hmac import compare_digest
 from pathlib import Path
+from secrets import token_urlsafe
 
-from flask import Flask, current_app, session
+from flask import Flask, abort, current_app, request, session
 
 
 def _load_local_env() -> None:
@@ -48,6 +50,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             os.getenv("SCAMLENS_LLM_OUTPUT_COST_PER_MILLION", "2.50")
         ),
         SCAMLENS_ALLOW_DEV_MODE=_env_bool("SCAMLENS_ALLOW_DEV_MODE", True),
+        SCAMLENS_CSRF_ENABLED=_env_bool("SCAMLENS_CSRF_ENABLED", True),
         SCAMLENS_EVALUATION_DB=os.getenv(
             "SCAMLENS_EVALUATION_DB",
             str(Path(app.instance_path) / "scamlens_evaluation.sqlite3"),
@@ -76,6 +79,50 @@ def create_app(test_config: dict | None = None) -> Flask:
     evaluation_store.initialize()
     app.extensions["scamlens_evaluation_store"] = evaluation_store
 
+    def csrf_token() -> str:
+        token = session.get("_csrf_token")
+        if not token:
+            token = token_urlsafe(32)
+            session["_csrf_token"] = token
+        return token
+
+    @app.before_request
+    def verify_csrf_token():
+        """Protect browser forms while leaving the JSON API available to API clients."""
+        if (
+            not current_app.config["SCAMLENS_CSRF_ENABLED"]
+            or request.method != "POST"
+            or request.endpoint == "main.analyse_api"
+        ):
+            return None
+        expected = session.get("_csrf_token", "")
+        provided = request.form.get("_csrf_token", "") or request.headers.get(
+            "X-CSRF-Token", ""
+        )
+        if not expected or not provided or not compare_digest(
+            str(expected), str(provided)
+        ):
+            abort(400, description="Invalid or missing CSRF token.")
+        return None
+
+    @app.after_request
+    def apply_security_headers(response):
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
+        response.headers.setdefault(
+            "Permissions-Policy", "camera=(), geolocation=(), microphone=()"
+        )
+        response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
+        response.headers.setdefault(
+            "Content-Security-Policy",
+            "default-src 'self'; base-uri 'none'; connect-src 'self'; "
+            "font-src 'self' https://fonts.gstatic.com; frame-ancestors 'none'; "
+            "form-action 'self'; img-src 'self' data:; script-src 'self'; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        )
+        return response
+
     @app.context_processor
     def inject_runtime_flags() -> dict:
         developer_mode = bool(
@@ -87,6 +134,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             "developer_mode_available": current_app.config["SCAMLENS_ALLOW_DEV_MODE"],
             "llm_available": bool(current_app.config["OPENROUTER_API_KEY"]),
             "llm_model_name": current_app.config["SCAMLENS_LLM_MODEL"],
+            "csrf_token": csrf_token(),
         }
 
     return app

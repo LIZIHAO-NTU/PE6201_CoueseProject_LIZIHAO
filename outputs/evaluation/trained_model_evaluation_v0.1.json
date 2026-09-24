@@ -93,10 +93,10 @@
   "gold_test_rules_baseline": {
     "n": 30,
     "exact_three_way_accuracy": 0.3,
-    "operational_scam_recall": 0.2,
+    "operational_scam_recall": 0.3,
     "high_risk_scam_recall": 0.1,
     "legitimate_false_positive_rate": 0.0,
-    "abstention_rate": 0.0667,
+    "abstention_rate": 0.1333,
     "ambiguous_abstention_recall": 0.0
   },
   "gold_test_predictions": [

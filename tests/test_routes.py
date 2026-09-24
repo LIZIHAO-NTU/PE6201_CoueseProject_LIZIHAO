@@ -12,6 +12,7 @@ def client(tmp_path):
             "SCAMLENS_EVALUATION_DB": str(tmp_path / "evaluation.sqlite3"),
             "SCAMLENS_EVALUATION_EXPORT_DIR": str(tmp_path / "exports"),
             "SCAMLENS_BENCHMARK_SYNC": True,
+            "SCAMLENS_CSRF_ENABLED": False,
         }
     )
     return app.test_client()
@@ -29,11 +30,62 @@ def test_home_page(client):
     assert b"G2606399B" in response.data
     assert b"PE6201" in response.data
     assert b"End-of-Course Project" in response.data
+    assert response.headers["X-Content-Type-Options"] == "nosniff"
+    assert response.headers["X-Frame-Options"] == "DENY"
+    assert "frame-ancestors 'none'" in response.headers["Content-Security-Policy"]
+
+
+def test_browser_post_requires_a_valid_csrf_token(tmp_path):
+    app = create_app(
+        {
+            "TESTING": True,
+            "OPENROUTER_API_KEY": "",
+            "SCAMLENS_CSRF_ENABLED": True,
+            "SCAMLENS_EVALUATION_DB": str(tmp_path / "csrf.sqlite3"),
+            "SCAMLENS_EVALUATION_EXPORT_DIR": str(tmp_path / "csrf-exports"),
+        }
+    )
+    csrf_client = app.test_client()
+    assert csrf_client.post("/analyse", data={"message": "Hello"}).status_code == 400
+
+    csrf_client.get("/")
+    with csrf_client.session_transaction() as browser_session:
+        token = browser_session["_csrf_token"]
+    response = csrf_client.post(
+        "/analyse", data={"message": "Hello", "_csrf_token": token}
+    )
+    assert response.status_code == 200
 
 
 def test_api_rejects_missing_message(client):
     response = client.post("/api/v1/analyse", json={})
     assert response.status_code == 400
+
+
+@pytest.mark.parametrize("body", [[], "not-an-object", 7, None])
+def test_api_rejects_non_object_json_bodies(client, body):
+    response = client.post("/api/v1/analyse", json=body)
+    assert response.status_code == 400
+    assert response.get_json()["error"] == "Request body must be a JSON object."
+
+
+def test_api_rejects_non_string_and_oversized_messages(client):
+    non_string = client.post("/api/v1/analyse", json={"message": 123})
+    assert non_string.status_code == 400
+    assert "must be a string" in non_string.get_json()["error"]
+
+    oversized = client.post("/api/v1/analyse", json={"message": "x" * 8_001})
+    assert oversized.status_code == 400
+    assert "at most 8000" in oversized.get_json()["error"]
+
+
+def test_api_rejects_string_values_for_boolean_fields(client):
+    response = client.post(
+        "/api/v1/analyse",
+        json={"message": "Hello", "transferred_money": "false"},
+    )
+    assert response.status_code == 400
+    assert "must be a JSON boolean" in response.get_json()["error"]
 
 
 def test_api_returns_structured_assessment(client):

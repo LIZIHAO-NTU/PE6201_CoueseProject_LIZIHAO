@@ -1,8 +1,10 @@
 # ScamLens SG
 
-An evidence-grounded, multi-signal scam risk assessment and intervention assistant for Singapore residents. This repository contains the first Flask MVP for the PE6201 End-of-Course Project.
+[![Tests](https://github.com/LIZIHAO-NTU/PE6201_CoueseProject_LIZIHAO/actions/workflows/tests.yml/badge.svg)](https://github.com/LIZIHAO-NTU/PE6201_CoueseProject_LIZIHAO/actions/workflows/tests.yml)
 
-## What the MVP does
+An evidence-grounded, multi-signal scam risk assessment and intervention assistant for Singapore residents. This repository contains the final Flask course prototype for the PE6201 End-of-Course Project.
+
+## What the prototype does
 
 - Accepts pasted SMS, WhatsApp or email text.
 - Detects four primary scam categories: government official impersonation, investment, job and e-commerce.
@@ -20,13 +22,26 @@ An evidence-grounded, multi-signal scam risk assessment and intervention assista
 
 ## Run locally
 
+Python 3.11 is recommended. Local analysis works without an API key.
+
 ```bat
-conda activate your-environment
+conda create -n scamlens python=3.11 -y
+conda activate scamlens
 python -m pip install -r requirements.txt
 python run.py
 ```
 
 Open `http://127.0.0.1:5000`.
+
+## Architecture
+
+`message → local ML and guardrails → static URL analysis → official-source retrieval → optional LLM second opinion → conservative fusion → deterministic intervention`
+
+- `app/services/` contains the independently testable ML, URL, retrieval, LLM, fusion, intervention and evaluation modules.
+- `app/templates/` and `app/static/` contain the Flask user interface.
+- `data/` contains versioned schemas, reviewed datasets, model metadata and the curated evidence corpus.
+- `scripts/` contains validation, training and evaluation entry points.
+- `outputs/evaluation/` contains frozen and diagnostic results; `tests/` contains regression and safety tests.
 
 ## Optional OpenRouter integration
 
@@ -57,25 +72,44 @@ Developer mode can run a labelled benchmark in the background. The local baselin
 
 Completed runs are written automatically to `outputs/evaluation/persistent/benchmark_<run_id>.json` and `.csv`. Freezing a completed run also updates `frozen_benchmark.json` and `.csv`; the public Evaluation page reads the same frozen SQLite summary. Exports contain case IDs, labels, hashes, predictions and diagnostics, but not message text.
 
-The architecture is:
-
-`message → local ML and guardrails → static URL analysis → official-source retrieval → optional LLM second opinion → conservative fusion → deterministic intervention`
-
 ## Run tests
 
 ```bat
 python -m pytest -q
 ```
 
+Every push and pull request runs the same test suite through GitHub Actions. Key offline evaluation steps can be reproduced with:
+
+```bat
+python scripts/check_dataset_leakage.py data\training\message_training_candidates_v0.1.jsonl data\eval\message_gold_test_v0.1.jsonl
+python scripts/evaluate_baseline.py
+python scripts/evaluate_deployed_model.py
+python scripts/evaluate_retriever.py
+```
+
+## JSON API
+
+Send a JSON object to `POST /api/v1/analyse`. The message is required; state flags must be JSON booleans.
+
+```json
+{
+  "message": "Your account will be suspended. Verify at https://example.com",
+  "clicked_link": false,
+  "shared_credentials": false,
+  "transferred_money": false,
+  "use_llm": false
+}
+```
+
 ## Current model
 
-The deployed MVP uses word and character TF-IDF features with Logistic Regression for risk classification. Operating thresholds were selected only on the validation split. A small auditable safety-policy layer prevents low-risk reassurance for explicit off-platform marketplace payment requests, and a context resolver improves scam-type explanations before falling back to the trained type classifier. Static URL inspection, rule-based mechanism extraction, lexical evidence retrieval and intervention logic remain separate and auditable modules. The original weighted-rule detector is retained as an evaluation baseline.
+The final prototype uses word and character TF-IDF features with Logistic Regression for risk classification. Operating thresholds were selected only on the validation split. A small auditable safety-policy layer prevents low-risk reassurance for explicit off-platform marketplace payment requests, and a context resolver improves scam-type explanations before falling back to the trained type classifier. Static URL inspection, rule-based mechanism extraction, lexical evidence retrieval and intervention logic remain separate and auditable modules. The original weighted-rule detector is retained as an evaluation baseline.
 
 The reviewed datasets are small and mostly synthetic. Reported results demonstrate the engineering and evaluation workflow; they are not evidence of deployment readiness.
 
 ## Frozen evaluation result
 
-On the 30-record gold test set, the trained deployment achieved 95.0% operational scam recall and 63.3% exact three-way accuracy, compared with 20.0% and 30.0% for the rules baseline. The trained model's legitimate false-positive rate was 14.3%, and one scam received a low-risk result. Review the complete error set in `outputs/019ff04b-cd46-7592-878a-23b1747c508d/model_evaluation_review_v0.1.xlsx`.
+On the 30-record gold test set, the trained deployment achieved 95.0% operational scam recall and 63.3% exact three-way accuracy, compared with 30.0% and 30.0% for the rules baseline. The trained model's legitimate false-positive rate was 14.3%, and one scam received a low-risk result. The complete student review is available in [`outputs/evaluation/deployed_predictions_review_v0.2.csv`](outputs/evaluation/deployed_predictions_review_v0.2.csv), with its structured summary in [`outputs/evaluation/model_error_review_results_v0.1.json`](outputs/evaluation/model_error_review_results_v0.1.json).
 
 Validation selected a text weight of 1.0. URL inspection therefore remains a separately displayed safety signal but does not change the frozen numerical risk score in this small-data configuration.
 
@@ -113,10 +147,20 @@ python scripts/validate_message_dataset.py path\to\dataset.jsonl
 
 The first 30 evaluation candidates were student-reviewed and promoted to the fixed test set at `data/eval/message_gold_test_v0.1.jsonl`. Do not use this file for training or threshold tuning. The initial rule baseline results are recorded in `outputs/evaluation/baseline_evaluation_v0.1.md`.
 
-The next independent pool contains 60 training/validation candidates at `data/training/message_training_candidates_v0.1.jsonl`. Review them in `outputs/019ff04b-cd46-7592-878a-23b1747c508d/message_training_review_v0.1.xlsx` before any model training. The planned modelling and comparison sequence is documented in `docs/model_development_plan.md`.
+The 60 training/validation candidates at `data/training/message_training_candidates_v0.1.jsonl` were reviewed before model training. The review table is in [`data/training/message_training_review_v0.1.csv`](data/training/message_training_review_v0.1.csv), with its structured summary in [`data/training/message_training_review_results_v0.1.json`](data/training/message_training_review_results_v0.1.json). The modelling and comparison sequence is documented in [`docs/model_development_plan.md`](docs/model_development_plan.md).
 
 Check train/test leakage with:
 
 ```bat
 python scripts/check_dataset_leakage.py data\training\message_training_candidates_v0.1.jsonl data\eval\message_gold_test_v0.1.jsonl
 ```
+
+## Security, privacy and responsible-use boundaries
+
+- Browser state-changing forms use CSRF protection; responses include a restrictive content security policy and standard browser security headers.
+- The JSON API validates types and limits messages to 8,000 characters. Flask also enforces a request-size limit.
+- URLs are inspected statically and are never opened. LLM output is schema-validated, and cited evidence IDs must match records retrieved for that request.
+- Persistent telemetry stores message hashes and operational metadata, not raw messages. LLM mode is opt-in and redacts common personal identifiers before sending a compact context.
+- `.env`, SQLite databases, logs and local environments are excluded from Git. Never commit an API key.
+
+This is a local student prototype, not a production security service or a definitive determination that a message or URL is safe. The datasets are small and partly synthetic; a real deployment would require broader multilingual data, adversarial/red-team evaluation, accessibility and usability testing, live threat-intelligence governance, authenticated API access, rate limiting and formal privacy/security review.

@@ -9,6 +9,7 @@
 
 <section class="workspace" aria-label="Message analysis workspace">
   <form class="analysis-form" action="{{ url_for('main.analyse') }}" method="post">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
     <div class="form-heading">
       <div><span class="step">01</span><h2>Paste the suspicious message</h2></div>
       <span class="privacy-note">Not stored by this prototype</span>
