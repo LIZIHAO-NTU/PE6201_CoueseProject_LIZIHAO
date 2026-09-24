@@ -8,6 +8,9 @@ from secrets import token_urlsafe
 from flask import Flask, abort, current_app, request, session
 
 
+APP_VERSION = "2.0"
+
+
 def _load_local_env() -> None:
     """Load this prototype's small .env file without adding a runtime dependency."""
     env_path = Path(__file__).resolve().parents[1] / ".env"
@@ -135,6 +138,7 @@ def create_app(test_config: dict | None = None) -> Flask:
             "llm_available": bool(current_app.config["OPENROUTER_API_KEY"]),
             "llm_model_name": current_app.config["SCAMLENS_LLM_MODEL"],
             "csrf_token": csrf_token(),
+            "app_version": APP_VERSION,
         }
 
     return app

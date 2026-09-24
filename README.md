@@ -2,6 +2,8 @@
 
 [![Tests](https://github.com/LIZIHAO-NTU/PE6201_CoueseProject_LIZIHAO/actions/workflows/tests.yml/badge.svg)](https://github.com/LIZIHAO-NTU/PE6201_CoueseProject_LIZIHAO/actions/workflows/tests.yml)
 
+**Release: v2.0**
+
 An evidence-grounded, multi-signal scam risk assessment and intervention assistant for Singapore residents. This repository contains the final Flask course prototype for the PE6201 End-of-Course Project.
 
 ## What the prototype does

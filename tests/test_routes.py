@@ -30,6 +30,7 @@ def test_home_page(client):
     assert b"G2606399B" in response.data
     assert b"PE6201" in response.data
     assert b"End-of-Course Project" in response.data
+    assert b"ScamLens SG v2.0" in response.data
     assert response.headers["X-Content-Type-Options"] == "nosniff"
     assert response.headers["X-Frame-Options"] == "DENY"
     assert "frame-ancestors 'none'" in response.headers["Content-Security-Policy"]
